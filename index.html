@@ -47,7 +47,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);
            border-top:1px solid rgba(255,255,255,.06);line-height:2}
 
 /* ── Main ── */
-#main{margin-left:var(--sidebar-w);flex:1;padding:28px 32px;max-width:1300px}
+#main{
+  margin-left:var(--sidebar-w);
+  width:calc(100% - var(--sidebar-w));
+  min-width:0;
+  padding:28px 32px;
+  overflow-x:hidden;
+}
 
 /* ── Header ── */
 #app-header{display:flex;align-items:flex-start;justify-content:space-between;
@@ -90,9 +96,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);
 .filter-reset:hover{background:var(--accent-dim);border-color:var(--accent)}
 
 /* ── KPI grid — 4 colunas fixas ── */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;width:100%}
+.kpi-grid > *{min-width:0}
 .kpi{background:var(--surface);border-radius:var(--radius);padding:18px 20px;
-     box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:box-shadow .15s}
+     box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:box-shadow .15s;
+     min-width:0;overflow:hidden}
 .kpi:hover{box-shadow:var(--shadow)}
 .kpi.ok{background:var(--ok-bg);border-color:var(--ok-dim)}
 .kpi.err{background:var(--err-bg);border-color:var(--err-dim)}
@@ -106,14 +114,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);
 .kpi.err .kpi-sub{color:#991b1b}
 
 /* ── Charts ── */
-.chart-row{display:grid;gap:14px;margin-bottom:14px}
+.chart-row{display:grid;gap:14px;margin-bottom:14px;width:100%}
 .col-1{grid-template-columns:1fr}
 .col-2{grid-template-columns:1fr 1fr}
 .col-3-1{grid-template-columns:2fr 1fr}
+/* min-width:0 é essencial: impede que itens de grid excedam 1fr */
+.chart-row > *{min-width:0}
 .chart-box{background:var(--surface);border-radius:var(--radius);
-           padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+           padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border);
+           min-width:0;overflow:hidden}
 .chart-box h3{font-size:12.5px;font-weight:600;color:var(--text-light);
               letter-spacing:.2px;margin-bottom:12px}
+/* Container Plotly sempre ocupa 100% da caixa, nunca mais */
+.chart-box > div[id]{width:100%;min-width:0}
 
 /* ── Tabela ── */
 .tbl-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow-sm);
@@ -170,7 +183,7 @@ tbody tr:last-child td{border-bottom:none}
   .sb-nav li a{padding:12px;justify-content:center}
   .nav-dot{display:none}
   .sb-nav li a::after{content:attr(data-abbr);font-size:15px;font-weight:700;color:inherit}
-  #main{padding:18px 14px}
+  #main{padding:18px 14px;width:calc(100% - 54px)}
   .col-2,.col-3-1{grid-template-columns:1fr}
 }
 @media(max-width:600px){
@@ -842,6 +855,13 @@ async function initApp(url,key){
     document.getElementById("loading").style.display="none";
   }
 }
+
+// Força Plotly a recalcular tamanho quando a janela for redimensionada
+window.addEventListener("resize",()=>{
+  document.querySelectorAll(".chart-box > div[id]").forEach(el=>{
+    if(el.data) Plotly.relayout(el,{autosize:true});
+  });
+});
 
 window.addEventListener("DOMContentLoaded",()=>{
   const url=HARD_URL||sessionStorage.getItem("sb_url");
