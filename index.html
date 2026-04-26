@@ -14,139 +14,220 @@
 /* ── Reset & variáveis ──────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#1a3a5c; --blue:#2e6da4; --gold:#e8a020;
-  --ok:#1e7e46;   --ok-bg:#f0faf4;
-  --err:#c0392b;  --err-bg:#fdf2f1;
-  --bg:#f0f3f7;   --surface:#fff;
-  --border:#dde4ed; --muted:#6b7b8d; --text:#1c2b3a;
-  --sidebar:220px; --radius:10px;
-  --shadow:0 2px 10px rgba(0,0,0,.08);
+  --accent:#4f6ef7;
+  --accent-dim:#eef0fe;
+  --ok:#059669;    --ok-bg:#ecfdf5;    --ok-dim:#d1fae5;
+  --err:#dc2626;   --err-bg:#fff1f0;   --err-dim:#fecaca;
+  --warn:#d97706;  --warn-bg:#fffbeb;
+  --bg:#f3f4f6;
+  --surface:#ffffff;
+  --border:#e5e7eb;
+  --muted:#6b7280;
+  --text:#111827;
+  --text-light:#374151;
+  --sidebar-bg:#111827;
+  --sidebar-text:#9ca3af;
+  --sidebar-active:#ffffff;
+  --sidebar-hover:rgba(255,255,255,.06);
+  --sidebar-w:224px;
+  --radius:10px;
+  --shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
 }
 html{scroll-behavior:smooth}
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);
-     color:var(--text);display:flex;min-height:100vh;font-size:14px}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  display:flex;min-height:100vh;font-size:14px;line-height:1.5
+}
 
 /* ── Sidebar ────────────────────────────────────────────────────────────── */
 #sidebar{
-  width:var(--sidebar);background:var(--navy);color:#c8d8ea;
+  width:var(--sidebar-w);background:var(--sidebar-bg);
   display:flex;flex-direction:column;position:fixed;top:0;left:0;
   height:100vh;z-index:100;overflow-y:auto
 }
-.sb-brand{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sb-brand .title{font-size:17px;font-weight:800;color:#fff}
-.sb-brand .sub{font-size:11px;color:#8ab4d4;margin-top:3px}
-.sb-nav{list-style:none;padding:14px 0;flex:1}
+.sb-brand{
+  padding:22px 20px 20px;
+  border-bottom:1px solid rgba(255,255,255,.07)
+}
+.sb-brand .title{
+  font-size:14px;font-weight:700;color:#fff;letter-spacing:.3px
+}
+.sb-brand .sub{
+  font-size:11px;color:var(--sidebar-text);margin-top:3px
+}
+.sb-section{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:#4b5563;padding:18px 20px 6px
+}
+.sb-nav{list-style:none;padding:0 10px 14px;flex:1}
 .sb-nav li a{
-  display:block;padding:11px 20px;color:#c8d8ea;text-decoration:none;
-  font-size:13.5px;font-weight:500;border-left:3px solid transparent;
-  transition:background .15s,color .15s
+  display:flex;align-items:center;gap:9px;
+  padding:9px 12px;color:var(--sidebar-text);text-decoration:none;
+  font-size:13px;font-weight:500;border-radius:7px;
+  transition:background .12s,color .12s;margin-bottom:1px
 }
-.sb-nav li a:hover,.sb-nav li a.active{
-  background:rgba(255,255,255,.1);color:#fff;border-left-color:var(--gold)
+.sb-nav li a:hover{background:var(--sidebar-hover);color:#e5e7eb}
+.sb-nav li a.active{background:rgba(79,110,247,.18);color:var(--sidebar-active)}
+.sb-nav li a .nav-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--sidebar-text);
+  flex-shrink:0;transition:background .12s
 }
-.sb-footer{padding:16px 20px;font-size:11px;color:rgba(200,216,234,.5);
-           border-top:1px solid rgba(255,255,255,.08);line-height:1.9}
+.sb-nav li a.active .nav-dot{background:var(--accent)}
+.sb-footer{
+  padding:14px 20px;font-size:11px;color:#4b5563;
+  border-top:1px solid rgba(255,255,255,.06);line-height:2
+}
 
 /* ── Main ───────────────────────────────────────────────────────────────── */
-#main{margin-left:var(--sidebar);flex:1;padding:28px 32px;max-width:1300px}
+#main{margin-left:var(--sidebar-w);flex:1;padding:28px 32px;max-width:1300px}
 
 /* ── Header ─────────────────────────────────────────────────────────────── */
 #app-header{
   display:flex;align-items:flex-start;justify-content:space-between;
-  gap:16px;margin-bottom:22px;padding-bottom:18px;
-  border-bottom:2px solid var(--border)
+  gap:16px;margin-bottom:24px;padding-bottom:20px;
+  border-bottom:1px solid var(--border)
 }
-#app-header h1{font-size:20px;font-weight:800;color:var(--navy);line-height:1.3}
-#app-header .sub{font-size:13px;color:var(--muted);margin-top:4px}
-.badge{background:var(--gold);color:#fff;font-size:11px;font-weight:700;
-       padding:4px 12px;border-radius:20px;white-space:nowrap}
+#app-header h1{font-size:18px;font-weight:700;color:var(--text);line-height:1.3}
+#app-header .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.badge{
+  background:var(--accent-dim);color:var(--accent);
+  font-size:11px;font-weight:600;padding:4px 12px;
+  border-radius:20px;white-space:nowrap;border:1px solid #c7d0fd
+}
 
 /* ── Páginas ────────────────────────────────────────────────────────────── */
 .page{display:none}
 .page.active{display:block}
-.page-label{font-size:11px;font-weight:700;text-transform:uppercase;
-            letter-spacing:1.2px;color:var(--gold);margin-bottom:5px}
-.page-title{font-size:21px;font-weight:800;color:var(--navy);
-            border-left:5px solid var(--gold);padding-left:12px;margin-bottom:5px}
-.page-desc{font-size:13px;color:var(--muted);margin-bottom:20px;
-           padding-bottom:14px;border-bottom:1px solid var(--border)}
+.page-eyebrow{
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:1px;color:var(--accent);margin-bottom:4px
+}
+.page-title{
+  font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px
+}
+.page-desc{
+  font-size:13px;color:var(--muted);margin-bottom:22px;
+  padding-bottom:16px;border-bottom:1px solid var(--border)
+}
 
 /* ── KPI grid ───────────────────────────────────────────────────────────── */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
-          gap:14px;margin-bottom:24px}
-.kpi{background:var(--surface);border-radius:var(--radius);padding:16px 18px;
-     border-left:5px solid var(--blue);box-shadow:var(--shadow);
-     transition:transform .15s}
-.kpi:hover{transform:translateY(-2px)}
-.kpi.ok {border-left-color:var(--ok);background:var(--ok-bg)}
-.kpi.err{border-left-color:var(--err);background:var(--err-bg)}
-.kpi-lbl{font-size:11px;font-weight:700;text-transform:uppercase;
-         letter-spacing:.8px;color:var(--muted);margin-bottom:5px}
-.kpi-val{font-size:23px;font-weight:800;color:var(--navy);line-height:1.1}
+.kpi-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;margin-bottom:24px
+}
+.kpi{
+  background:var(--surface);border-radius:var(--radius);
+  padding:18px 20px;box-shadow:var(--shadow-sm);
+  border:1px solid var(--border);transition:box-shadow .15s
+}
+.kpi:hover{box-shadow:var(--shadow)}
+.kpi.ok {background:var(--ok-bg);border-color:var(--ok-dim)}
+.kpi.err{background:var(--err-bg);border-color:var(--err-dim)}
+.kpi-lbl{
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.7px;color:var(--muted);margin-bottom:7px
+}
+.kpi-val{font-size:22px;font-weight:700;color:var(--text);line-height:1.1}
 .kpi.ok  .kpi-val{color:var(--ok)}
 .kpi.err .kpi-val{color:var(--err)}
-.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
-.kpi.ok  .kpi-sub{color:#155d35}
-.kpi.err .kpi-sub{color:#7b1a13}
+.kpi-sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+.kpi.ok  .kpi-sub{color:#065f46}
+.kpi.err .kpi-sub{color:#991b1b}
 
 /* ── Charts grid ────────────────────────────────────────────────────────── */
-.chart-row{display:grid;gap:16px;margin-bottom:16px}
+.chart-row{display:grid;gap:14px;margin-bottom:14px}
 .col-1{grid-template-columns:1fr}
 .col-2{grid-template-columns:1fr 1fr}
 .col-3-1{grid-template-columns:2fr 1fr}
 .col-1-1-1{grid-template-columns:1fr 1fr 1fr}
-.chart-box{background:var(--surface);border-radius:var(--radius);
-           padding:16px;box-shadow:var(--shadow)}
-.chart-box h3{font-size:13px;font-weight:700;color:var(--blue);
-              text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.chart-box{
+  background:var(--surface);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border)
+}
+.chart-box h3{
+  font-size:12.5px;font-weight:600;color:var(--text-light);
+  letter-spacing:.2px;margin-bottom:12px
+}
 
 /* ── Tabela ─────────────────────────────────────────────────────────────── */
-.tbl-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow);
-          background:var(--surface);margin-top:16px}
+.tbl-wrap{
+  overflow-x:auto;border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);background:var(--surface);
+  border:1px solid var(--border);margin-top:14px
+}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{background:var(--navy);color:#fff;padding:10px 14px;
-         text-align:left;font-weight:600;font-size:12px;white-space:nowrap}
-tbody tr:nth-child(even){background:#f7f9fc}
-tbody tr:hover{background:#edf2f8}
-tbody td{padding:9px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
+thead th{
+  background:#f9fafb;color:var(--muted);
+  padding:10px 16px;text-align:left;
+  font-weight:600;font-size:11px;
+  text-transform:uppercase;letter-spacing:.5px;
+  border-bottom:1px solid var(--border);white-space:nowrap
+}
+tbody tr:hover{background:#f9fafb}
+tbody td{
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  white-space:nowrap;color:var(--text-light)
+}
+tbody tr:last-child td{border-bottom:none}
 
-/* ── Loading / error ────────────────────────────────────────────────────── */
-#loading{position:fixed;inset:0;background:rgba(26,58,92,.92);
-         display:flex;flex-direction:column;align-items:center;
-         justify-content:center;z-index:999;color:#fff;gap:16px}
-#loading .spinner{width:46px;height:46px;border:5px solid rgba(255,255,255,.25);
-                  border-top-color:var(--gold);border-radius:50%;
-                  animation:spin .8s linear infinite}
+/* ── Loading ──────────────────────────────────────────────────────────────── */
+#loading{
+  position:fixed;inset:0;background:rgba(17,24,39,.9);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;z-index:999;color:#fff;gap:14px
+}
+#loading .spinner{
+  width:40px;height:40px;border:3px solid rgba(255,255,255,.15);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .75s linear infinite
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-#loading p{font-size:15px;color:#c8d8ea}
+#loading p{font-size:14px;color:#9ca3af}
 
-#cfg-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);
-           display:flex;align-items:center;justify-content:center;z-index:1000}
-.cfg-box{background:#fff;border-radius:12px;padding:32px 36px;
-         max-width:480px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)}
-.cfg-box h2{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px}
-.cfg-box p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
-.cfg-box label{font-size:12px;font-weight:700;color:var(--navy);
-               text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
-.cfg-box input{width:100%;padding:10px 12px;border:1.5px solid var(--border);
-               border-radius:6px;font-size:13px;margin-bottom:14px;outline:none}
-.cfg-box input:focus{border-color:var(--blue)}
-.cfg-btn{width:100%;padding:12px;background:var(--navy);color:#fff;
-         font-size:14px;font-weight:700;border:none;border-radius:8px;
-         cursor:pointer;transition:background .2s}
-.cfg-btn:hover{background:var(--blue)}
+/* ── Config modal ─────────────────────────────────────────────────────────── */
+#cfg-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;z-index:1000
+}
+.cfg-box{
+  background:#fff;border-radius:14px;padding:32px 36px;
+  max-width:460px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)
+}
+.cfg-box h2{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px}
+.cfg-box p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.cfg-box label{
+  font-size:11px;font-weight:600;color:var(--text-light);
+  text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px
+}
+.cfg-box input{
+  width:100%;padding:10px 13px;border:1.5px solid var(--border);
+  border-radius:7px;font-size:13px;margin-bottom:14px;outline:none;
+  color:var(--text);transition:border-color .15s
+}
+.cfg-box input:focus{border-color:var(--accent)}
+.cfg-btn{
+  width:100%;padding:11px;background:var(--accent);color:#fff;
+  font-size:14px;font-weight:600;border:none;border-radius:8px;
+  cursor:pointer;transition:opacity .15s
+}
+.cfg-btn:hover{opacity:.88}
 .cfg-err{color:var(--err);font-size:12px;margin-top:8px;display:none}
 
 /* ── Footer ─────────────────────────────────────────────────────────────── */
-#footer{text-align:center;font-size:11px;color:#aaa;
-        border-top:1px solid var(--border);padding:20px 0;margin-top:32px}
+#footer{
+  text-align:center;font-size:11.5px;color:#9ca3af;
+  border-top:1px solid var(--border);padding:22px 0;margin-top:36px
+}
 
 /* ── Responsivo ─────────────────────────────────────────────────────────── */
 @media(max-width:900px){
-  :root{--sidebar:56px}
-  .sb-brand .title,.sb-brand .sub,.sb-nav li a span,.sb-footer{display:none}
-  .sb-nav li a{padding:14px;font-size:0}
-  .sb-nav li a::before{content:attr(data-icon);font-size:18px}
+  :root{--sidebar-w:54px}
+  .sb-brand .title,.sb-brand .sub,.sb-nav li a span,.sb-section,.sb-footer{display:none}
+  .sb-nav li a{padding:12px;justify-content:center}
+  .sb-nav li a .nav-dot{display:none}
+  .sb-nav li a::after{content:attr(data-abbr);font-size:16px;font-weight:700;color:inherit}
   #main{padding:18px 14px}
   .col-2,.col-3-1,.col-1-1-1{grid-template-columns:1fr}
 }
@@ -164,107 +245,108 @@ tbody td{padding:9px 14px;border-bottom:1px solid var(--border);white-space:nowr
   <p>Carregando dados...</p>
 </div>
 
-<!-- ── Modal de configuração (primeira vez) ──────────────────────────────── -->
+<!-- ── Modal de configuração ─────────────────────────────────────────────── -->
 <div id="cfg-modal" style="display:none">
   <div class="cfg-box">
-    <h2>📊 Configurar Supabase</h2>
+    <h2>Configurar Supabase</h2>
     <p>Informe as credenciais do seu projeto Supabase.<br>
        A chave <strong>anon/public</strong> é segura para uso aqui — RLS está ativo.</p>
     <label>Project URL</label>
     <input id="cfg-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co"/>
     <label>Anon Key</label>
     <input id="cfg-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."/>
-    <button class="cfg-btn" onclick="saveConfig()">Conectar →</button>
-    <p class="cfg-err" id="cfg-err">Não foi possível conectar. Verifique as credenciais.</p>
+    <button class="cfg-btn" onclick="saveConfig()">Conectar</button>
+    <p class="cfg-err" id="cfg-err">Nao foi possivel conectar. Verifique as credenciais.</p>
   </div>
 </div>
 
 <!-- ── Sidebar ───────────────────────────────────────────────────────────── -->
 <nav id="sidebar">
   <div class="sb-brand">
-    <div class="title">📊 BI Omnichannel</div>
-    <div class="sub">Loja de Roupas · 2025</div>
+    <div class="title">BI Omnichannel</div>
+    <div class="sub">Loja de Roupas &middot; 2025</div>
   </div>
+  <div class="sb-section">Paginas</div>
   <ul class="sb-nav">
-    <li><a href="#" data-page="executivo"   data-icon="📈" class="active">📈&nbsp; Executivo</a></li>
-    <li><a href="#" data-page="marketing"   data-icon="📣">📣&nbsp; Marketing</a></li>
-    <li><a href="#" data-page="produtos"    data-icon="👗">👗&nbsp; Produtos</a></li>
-    <li><a href="#" data-page="clientes"    data-icon="👥">👥&nbsp; Clientes</a></li>
-    <li><a href="#" data-page="diagnostico" data-icon="🔍">🔍&nbsp; Diagnóstico</a></li>
+    <li><a href="#" data-page="executivo"   data-abbr="E" class="active"><span class="nav-dot"></span><span>Executivo</span></a></li>
+    <li><a href="#" data-page="marketing"   data-abbr="M"><span class="nav-dot"></span><span>Marketing</span></a></li>
+    <li><a href="#" data-page="produtos"    data-abbr="P"><span class="nav-dot"></span><span>Produtos</span></a></li>
+    <li><a href="#" data-page="clientes"    data-abbr="C"><span class="nav-dot"></span><span>Clientes</span></a></li>
+    <li><a href="#" data-page="diagnostico" data-abbr="D"><span class="nav-dot"></span><span>Diagnostico</span></a></li>
   </ul>
   <div class="sb-footer">
-    📅 Jan–Jun 2025<br>
-    🎓 Projeto Acadêmico<br>
-    ⚠️ Dados sintéticos
+    Jan&ndash;Jun 2025<br>
+    Projeto Academico<br>
+    Dados sinteticos
   </div>
 </nav>
 
-<!-- ── Conteúdo principal ─────────────────────────────────────────────────── -->
+<!-- ── Conteudo principal ─────────────────────────────────────────────────── -->
 <main id="main">
   <header id="app-header">
     <div>
-      <h1>Inteligência de Negócios — Loja de Roupas Omnichannel</h1>
-      <div class="sub">Análise de Conversão Digital e Custo de Aquisição de Clientes &middot; Jan–Jun 2025</div>
+      <h1>Inteligencia de Negocios &mdash; Loja de Roupas Omnichannel</h1>
+      <div class="sub">Analise de Conversao Digital e Custo de Aquisicao de Clientes &middot; Jan&ndash;Jun 2025</div>
     </div>
-    <div class="badge">Dados Sintéticos — Uso Acadêmico</div>
+    <div class="badge">Dados Sinteticos &mdash; Uso Academico</div>
   </header>
 
   <!-- EXECUTIVO -->
   <section id="page-executivo" class="page active">
-    <div class="page-label">Página 1</div>
-    <div class="page-title">Visão Executiva</div>
-    <div class="page-desc">Panorama geral do desempenho do e-commerce · Jan–Jun 2025</div>
+    <div class="page-eyebrow">Pagina 1</div>
+    <div class="page-title">Visao Executiva</div>
+    <div class="page-desc">Panorama geral do desempenho do e-commerce &middot; Jan&ndash;Jun 2025</div>
     <div class="kpi-grid" id="kpi-exec"></div>
     <div class="chart-row col-3-1">
-      <div class="chart-box"><h3>Receita Mensal &amp; Taxa de Conversão</h3><div id="ch-receita-conv" style="height:320px"></div></div>
-      <div class="chart-box"><h3>Conversão vs. Meta</h3><div id="ch-gauge" style="height:320px"></div></div>
+      <div class="chart-box"><h3>Receita Mensal &amp; Taxa de Conversao</h3><div id="ch-receita-conv" style="height:320px"></div></div>
+      <div class="chart-box"><h3>Conversao vs. Meta</h3><div id="ch-gauge" style="height:320px"></div></div>
     </div>
     <div class="chart-row col-1">
-      <div class="chart-box"><h3>Pedidos por Mês</h3><div id="ch-pedidos-mes" style="height:240px"></div></div>
+      <div class="chart-box"><h3>Pedidos por Mes</h3><div id="ch-pedidos-mes" style="height:240px"></div></div>
     </div>
   </section>
 
   <!-- MARKETING -->
   <section id="page-marketing" class="page">
-    <div class="page-label">Página 2</div>
+    <div class="page-eyebrow">Pagina 2</div>
     <div class="page-title">Marketing</div>
     <div class="page-desc">Desempenho de campanhas, CAC por canal e ROI de investimentos</div>
     <div class="kpi-grid" id="kpi-mkt"></div>
     <div class="chart-row col-2">
-      <div class="chart-box"><h3>CAC por Canal de Aquisição</h3><div id="ch-cac-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>CAC por Canal de Aquisicao</h3><div id="ch-cac-canal" style="height:300px"></div></div>
       <div class="chart-box"><h3>ROI por Campanha (top 8)</h3><div id="ch-roi-camp" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-1">
-      <div class="chart-box"><h3>Investimento em Marketing vs. Novos Clientes por Mês</h3><div id="ch-invest-mes" style="height:260px"></div></div>
+      <div class="chart-box"><h3>Investimento em Marketing vs. Novos Clientes por Mes</h3><div id="ch-invest-mes" style="height:260px"></div></div>
     </div>
     <div class="tbl-wrap"><table id="tbl-campanhas"></table></div>
   </section>
 
   <!-- PRODUTOS -->
   <section id="page-produtos" class="page">
-    <div class="page-label">Página 3</div>
+    <div class="page-eyebrow">Pagina 3</div>
     <div class="page-title">Produtos</div>
     <div class="page-desc">Mix de produtos, receita por categoria, margem e descontos</div>
     <div class="kpi-grid" id="kpi-prod"></div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Receita por Categoria (R$)</h3><div id="ch-receita-cat" style="height:300px"></div></div>
-      <div class="chart-box"><h3>Desconto Médio por Categoria (%)</h3><div id="ch-desconto-cat" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Desconto Medio por Categoria (%)</h3><div id="ch-desconto-cat" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Margem Bruta por Categoria (%)</h3><div id="ch-margem-cat" style="height:280px"></div></div>
-      <div class="chart-box"><h3>Ticket Médio vs. Volume de Pedidos</h3><div id="ch-scatter-prod" style="height:280px"></div></div>
+      <div class="chart-box"><h3>Ticket Medio vs. Volume de Pedidos</h3><div id="ch-scatter-prod" style="height:280px"></div></div>
     </div>
   </section>
 
   <!-- CLIENTES -->
   <section id="page-clientes" class="page">
-    <div class="page-label">Página 4</div>
+    <div class="page-eyebrow">Pagina 4</div>
     <div class="page-title">Clientes</div>
-    <div class="page-desc">Perfil, distribuição geográfica e comportamento da base de clientes</div>
+    <div class="page-desc">Perfil, distribuicao geografica e comportamento da base de clientes</div>
     <div class="kpi-grid" id="kpi-cli"></div>
     <div class="chart-row col-2">
-      <div class="chart-box"><h3>Clientes por Canal de Aquisição</h3><div id="ch-cli-canal" style="height:300px"></div></div>
-      <div class="chart-box"><h3>Distribuição por Faixa de Renda</h3><div id="ch-renda" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Clientes por Canal de Aquisicao</h3><div id="ch-cli-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Distribuicao por Faixa de Renda</h3><div id="ch-renda" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Top 12 Estados</h3><div id="ch-cli-uf" style="height:280px"></div></div>
@@ -272,18 +354,18 @@ tbody td{padding:9px 14px;border-bottom:1px solid var(--border);white-space:nowr
     </div>
   </section>
 
-  <!-- DIAGNÓSTICO -->
+  <!-- DIAGNOSTICO -->
   <section id="page-diagnostico" class="page">
-    <div class="page-label">Página 5</div>
-    <div class="page-title">Diagnóstico</div>
-    <div class="page-desc">Investigação das causas da baixa conversão e CAC elevado</div>
+    <div class="page-eyebrow">Pagina 5</div>
+    <div class="page-title">Diagnostico</div>
+    <div class="page-desc">Investigacao das causas da baixa conversao e CAC elevado</div>
     <div class="kpi-grid" id="kpi-diag"></div>
     <div class="chart-row col-1">
-      <div class="chart-box"><h3>Funil de Conversão — Jornada Completa do Cliente</h3><div id="ch-funil" style="height:360px"></div></div>
+      <div class="chart-box"><h3>Funil de Conversao &mdash; Jornada Completa do Cliente</h3><div id="ch-funil" style="height:360px"></div></div>
     </div>
     <div class="chart-row col-2">
-      <div class="chart-box"><h3>Conversão por Dispositivo</h3><div id="ch-conv-disp" style="height:300px"></div></div>
-      <div class="chart-box"><h3>Conversão por Canal de Origem</h3><div id="ch-conv-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Conversao por Dispositivo</h3><div id="ch-conv-disp" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Conversao por Canal de Origem</h3><div id="ch-conv-canal" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Funil por Dispositivo (volume)</h3><div id="ch-funil-disp" style="height:280px"></div></div>
@@ -293,8 +375,8 @@ tbody td{padding:9px 14px;border-bottom:1px solid var(--border);white-space:nowr
   </section>
 
   <footer id="footer">
-    Projeto Acadêmico de Business Intelligence &mdash;
-    Dados Sintéticos &mdash; Uso Exclusivamente Educacional
+    Projeto Academico de Business Intelligence &mdash;
+    Dados Sinteticos &mdash; Uso Exclusivamente Educacional
   </footer>
 </main>
 
@@ -307,11 +389,11 @@ const HARD_URL = "";   // ex: "https://xxxx.supabase.co"
 const HARD_KEY = "";   // ex: "eyJhbGci..."
 
 // ── Paleta ──────────────────────────────────────────────────────────────────
-const C = ["#2e6da4","#e8a020","#1e7e46","#c0392b","#8e44ad","#16a085","#d35400","#2c3e50"];
+const C = ["#4f6ef7","#f59e0b","#059669","#dc2626","#8b5cf6","#06b6d4","#f97316","#374151"];
 const LAYOUT = {
   paper_bgcolor:"#fff", plot_bgcolor:"#fff",
   margin:{t:20,b:40,l:50,r:20},
-  font:{family:"'Segoe UI',Arial,sans-serif",size:12,color:"#1c2b3a"},
+  font:{family:"'Segoe UI',system-ui,sans-serif",size:12,color:"#374151"},
   legend:{orientation:"h",y:-0.25},
 };
 const CFG = {responsive:true,displayModeBar:false};
@@ -388,7 +470,7 @@ function renderExecutivo(D){
       `Meta: ${pct(metaConv)} | Gap: ${(conv-metaConv).toFixed(2)} p.p.`,"err") +
     kpiCard("CAC",                    brl(cac),
       `Meta: ${brl(metaCac)} | Gap: ${brl(cac-metaCac)}`,"err") +
-    kpiCard("Ticket Médio",           brl(k.ticket_medio.valor),          "2,3× o CAC atual ▲","ok") +
+    kpiCard("Ticket Médio",           brl(k.ticket_medio.valor),          "2,3× o CAC atual","ok") +
     kpiCard("ROI de Marketing",       roi(k.roi_marketing.valor),         "R$ 4,69 por R$ 1,00 invest.","ok")
   );
 
@@ -399,7 +481,7 @@ function renderExecutivo(D){
     {type:"scatter",name:"Conversão (%)",x:m.map(r=>r.mes), y:m.map(r=>r.taxa_conversao),
      mode:"lines+markers",line:{color:C[1],width:3},marker:{size:7},yaxis:"y2"},
     {type:"scatter",name:"Meta 3,06%",   x:m.map(r=>r.mes), y:m.map(()=>3.06),
-     mode:"lines",line:{color:"#c0392b",dash:"dash",width:2},yaxis:"y2",showlegend:true},
+     mode:"lines",line:{color:"#dc2626",dash:"dash",width:2},yaxis:"y2",showlegend:true},
   ],{...LAYOUT,
     yaxis:{title:"Receita (R$)",tickprefix:"R$ ",separatethousands:true},
     yaxis2:{title:"Conversão (%)",overlaying:"y",side:"right",ticksuffix:"%",showgrid:false},
@@ -409,12 +491,12 @@ function renderExecutivo(D){
   Plotly.newPlot("ch-gauge",[{
     type:"indicator",mode:"gauge+number+delta",value:conv,
     delta:{reference:metaConv,valueformat:".2f",suffix:" p.p.",
-           increasing:{color:"#1e7e46"},decreasing:{color:"#c0392b"}},
+           increasing:{color:"#059669"},decreasing:{color:"#dc2626"}},
     number:{suffix:"%",valueformat:".2f"},
-    title:{text:"Conversão Atual<br><span style='font-size:12px;color:#888'>Meta: 3,06%</span>"},
-    gauge:{axis:{range:[0,5],ticksuffix:"%"},bar:{color:"#c0392b"},
-      steps:[{range:[0,metaConv],color:"#fde8e6"},{range:[metaConv,5],color:"#d4edda"}],
-      threshold:{line:{color:"#1e7e46",width:3},thickness:.85,value:metaConv}},
+    title:{text:"Conversão Atual<br><span style='font-size:12px;color:#9ca3af'>Meta: 3,06%</span>"},
+    gauge:{axis:{range:[0,5],ticksuffix:"%"},bar:{color:"#dc2626"},
+      steps:[{range:[0,metaConv],color:"#fee2e2"},{range:[metaConv,5],color:"#d1fae5"}],
+      threshold:{line:{color:"#059669",width:3},thickness:.85,value:metaConv}},
   }],{paper_bgcolor:"#fff",margin:{t:80,b:20,l:20,r:20},font:LAYOUT.font},CFG);
 
   // Pedidos por mês
@@ -443,7 +525,7 @@ function renderMarketing(D){
   );
 
   // CAC por canal
-  const cacCores = cc.map(r=>+r.cac<=113.46?"#1e7e46":"#c0392b");
+  const cacCores = cc.map(r=>+r.cac<=113.46?"#059669":"#dc2626");
   Plotly.newPlot("ch-cac-canal",[{
     type:"bar",orientation:"h",
     x:cc.map(r=>r.cac), y:cc.map(r=>r.canal),
@@ -452,9 +534,9 @@ function renderMarketing(D){
     textposition:"outside",name:"CAC",
   }],{...LAYOUT,
     shapes:[{type:"line",x0:113.46,x1:113.46,y0:-0.5,y1:cc.length-.5,
-             line:{color:"#1a3a5c",dash:"dash",width:2}}],
+             line:{color:"#374151",dash:"dash",width:2}}],
     annotations:[{x:113.46,y:cc.length,text:"Meta R$113",
-                  showarrow:false,font:{color:"#1a3a5c",size:11}}],
+                  showarrow:false,font:{color:"#374151",size:11}}],
     xaxis:{title:"CAC (R$)"},
   },CFG);
 
@@ -518,7 +600,7 @@ function renderProdutos(D){
   Plotly.newPlot("ch-desconto-cat",[{
     type:"bar",
     x:dsc.map(r=>r.categoria), y:dsc.map(r=>r.desconto_medio_pct),
-    marker:{color:dsc.map(r=>r.desconto_medio_pct>12?"#c0392b":"#e8a020")},
+    marker:{color:dsc.map(r=>r.desconto_medio_pct>12?"#dc2626":"#f59e0b")},
     text:dsc.map(r=>r.desconto_medio_pct.toFixed(1)+"%"),
     textposition:"outside",name:"Desconto",
   }],{...LAYOUT,yaxis:{title:"Desconto (%)"}},CFG);
@@ -527,7 +609,7 @@ function renderProdutos(D){
   Plotly.newPlot("ch-margem-cat",[{
     type:"bar",
     x:cats.map(r=>r.categoria), y:cats.map(r=>r.margem_pct),
-    marker:{color:"#1e7e46"},
+    marker:{color:"#059669"},
     text:cats.map(r=>r.margem_pct.toFixed(1)+"%"),
     textposition:"outside",name:"Margem",
   }],{...LAYOUT,yaxis:{title:"Margem (%)"}},CFG);
@@ -580,7 +662,7 @@ function renderClientes(D){
   // UF
   Plotly.newPlot("ch-cli-uf",[{
     type:"bar",x:uf.map(r=>r.uf),y:uf.map(r=>r.total_clientes),
-    marker:{color:"#1a3a5c"},text:uf.map(r=>r.total_clientes),
+    marker:{color:C[0]},text:uf.map(r=>r.total_clientes),
     textposition:"outside",name:"Clientes",
   }],{...LAYOUT,xaxis:{title:"UF"},yaxis:{title:"Clientes"}},CFG);
 
@@ -588,7 +670,7 @@ function renderClientes(D){
   const fid = [...cc].sort((a,b)=>b.score_fidelidade_medio-a.score_fidelidade_medio);
   Plotly.newPlot("ch-fidelidade",[{
     type:"bar",x:fid.map(r=>r.canal),y:fid.map(r=>r.score_fidelidade_medio),
-    marker:{color:fid.map(r=>r.score_fidelidade_medio>=60?"#1e7e46":"#e8a020")},
+    marker:{color:fid.map(r=>r.score_fidelidade_medio>=60?"#059669":"#f59e0b")},
     text:fid.map(r=>r.score_fidelidade_medio.toFixed(0)),
     textposition:"outside",name:"Score",
   }],{...LAYOUT,yaxis:{title:"Score (0–100)",range:[0,90]}},CFG);
@@ -628,8 +710,8 @@ function renderDiagnostico(D){
     y:["Sessões","Add to Cart","Checkout","Pedidos"],
     x:[totals.sessoes,totals.add_to_cart,totals.checkout,totals.pedidos],
     textinfo:"value+percent initial",
-    marker:{color:["#2e6da4","#e8a020","#c0392b","#1e7e46"]},
-    connector:{line:{color:"#dde4ed",width:2}},
+    marker:{color:["#4f6ef7","#f59e0b","#dc2626","#059669"]},
+    connector:{line:{color:"#e5e7eb",width:2}},
   }],{paper_bgcolor:"#fff",margin:{t:20,b:30,l:140,r:80}},CFG);
 
   // Conversão por dispositivo
@@ -637,28 +719,28 @@ function renderDiagnostico(D){
   Plotly.newPlot("ch-conv-disp",[{
     type:"bar",
     x:dispConv.map(r=>r.d), y:dispConv.map(r=>r.cv),
-    marker:{color:dispConv.map(r=>r.cv<2.66?"#c0392b":"#1e7e46")},
+    marker:{color:dispConv.map(r=>r.cv<2.66?"#dc2626":"#059669")},
     text:dispConv.map(r=>r.cv.toFixed(2)+"%"),
     textposition:"outside",name:"Conversão",
   }],{...LAYOUT,
     yaxis:{title:"Conversão (%)",range:[0,5]},
     shapes:[{type:"line",x0:-0.5,x1:2.5,y0:2.66,y1:2.66,
-             line:{color:"#1a3a5c",dash:"dash",width:2}}],
+             line:{color:"#374151",dash:"dash",width:2}}],
     annotations:[{x:2.4,y:2.66,text:"Média 2,66%",showarrow:false,
-                  font:{size:11,color:"#1a3a5c"},xanchor:"right"}],
+                  font:{size:11,color:"#374151"},xanchor:"right"}],
   },CFG);
 
   // Conversão por canal
   Plotly.newPlot("ch-conv-canal",[{
     type:"bar",orientation:"h",
     x:cc.map(r=>r.taxa_conversao), y:cc.map(r=>r.canal),
-    marker:{color:cc.map(r=>r.taxa_conversao>=2.66?"#1e7e46":"#c0392b")},
+    marker:{color:cc.map(r=>r.taxa_conversao>=2.66?"#059669":"#dc2626")},
     text:cc.map(r=>r.taxa_conversao.toFixed(2)+"%"),
     textposition:"outside",name:"Conversão",
   }],{...LAYOUT,
     xaxis:{title:"Conversão (%)"},
     shapes:[{type:"line",x0:2.66,x1:2.66,y0:-0.5,y1:cc.length-.5,
-             line:{color:"#1a3a5c",dash:"dash",width:2}}],
+             line:{color:"#374151",dash:"dash",width:2}}],
   },CFG);
 
   // Funil por dispositivo (grouped bar)
@@ -700,7 +782,6 @@ async function initApp(url, key){
   try {
     sb = supabase.createClient(url, key);
 
-    // Carrega todas as tabelas em paralelo
     const [kpis,mensal,cac_canal,campanhas,categorias,funil,
            cli_canal,cli_uf,renda,atendimento,conv_canal] = await Promise.all([
       query("kpis_resumo"), query("receita_mensal"), query("cac_por_canal"),
