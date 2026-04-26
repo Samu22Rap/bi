@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BI | Loja de Roupas Omnichannel</title>
+
+<!-- Supabase JS (browser) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!-- Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+
+<style>
+/* ── Reset & variáveis ──────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a3a5c; --blue:#2e6da4; --gold:#e8a020;
+  --ok:#1e7e46;   --ok-bg:#f0faf4;
+  --err:#c0392b;  --err-bg:#fdf2f1;
+  --bg:#f0f3f7;   --surface:#fff;
+  --border:#dde4ed; --muted:#6b7b8d; --text:#1c2b3a;
+  --sidebar:220px; --radius:10px;
+  --shadow:0 2px 10px rgba(0,0,0,.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);
+     color:var(--text);display:flex;min-height:100vh;font-size:14px}
+
+/* ── Sidebar ────────────────────────────────────────────────────────────── */
+#sidebar{
+  width:var(--sidebar);background:var(--navy);color:#c8d8ea;
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;
+  height:100vh;z-index:100;overflow-y:auto
+}
+.sb-brand{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-brand .title{font-size:17px;font-weight:800;color:#fff}
+.sb-brand .sub{font-size:11px;color:#8ab4d4;margin-top:3px}
+.sb-nav{list-style:none;padding:14px 0;flex:1}
+.sb-nav li a{
+  display:block;padding:11px 20px;color:#c8d8ea;text-decoration:none;
+  font-size:13.5px;font-weight:500;border-left:3px solid transparent;
+  transition:background .15s,color .15s
+}
+.sb-nav li a:hover,.sb-nav li a.active{
+  background:rgba(255,255,255,.1);color:#fff;border-left-color:var(--gold)
+}
+.sb-footer{padding:16px 20px;font-size:11px;color:rgba(200,216,234,.5);
+           border-top:1px solid rgba(255,255,255,.08);line-height:1.9}
+
+/* ── Main ───────────────────────────────────────────────────────────────── */
+#main{margin-left:var(--sidebar);flex:1;padding:28px 32px;max-width:1300px}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+#app-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:16px;margin-bottom:22px;padding-bottom:18px;
+  border-bottom:2px solid var(--border)
+}
+#app-header h1{font-size:20px;font-weight:800;color:var(--navy);line-height:1.3}
+#app-header .sub{font-size:13px;color:var(--muted);margin-top:4px}
+.badge{background:var(--gold);color:#fff;font-size:11px;font-weight:700;
+       padding:4px 12px;border-radius:20px;white-space:nowrap}
+
+/* ── Páginas ────────────────────────────────────────────────────────────── */
+.page{display:none}
+.page.active{display:block}
+.page-label{font-size:11px;font-weight:700;text-transform:uppercase;
+            letter-spacing:1.2px;color:var(--gold);margin-bottom:5px}
+.page-title{font-size:21px;font-weight:800;color:var(--navy);
+            border-left:5px solid var(--gold);padding-left:12px;margin-bottom:5px}
+.page-desc{font-size:13px;color:var(--muted);margin-bottom:20px;
+           padding-bottom:14px;border-bottom:1px solid var(--border)}
+
+/* ── KPI grid ───────────────────────────────────────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+          gap:14px;margin-bottom:24px}
+.kpi{background:var(--surface);border-radius:var(--radius);padding:16px 18px;
+     border-left:5px solid var(--blue);box-shadow:var(--shadow);
+     transition:transform .15s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi.ok {border-left-color:var(--ok);background:var(--ok-bg)}
+.kpi.err{border-left-color:var(--err);background:var(--err-bg)}
+.kpi-lbl{font-size:11px;font-weight:700;text-transform:uppercase;
+         letter-spacing:.8px;color:var(--muted);margin-bottom:5px}
+.kpi-val{font-size:23px;font-weight:800;color:var(--navy);line-height:1.1}
+.kpi.ok  .kpi-val{color:var(--ok)}
+.kpi.err .kpi-val{color:var(--err)}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.kpi.ok  .kpi-sub{color:#155d35}
+.kpi.err .kpi-sub{color:#7b1a13}
+
+/* ── Charts grid ────────────────────────────────────────────────────────── */
+.chart-row{display:grid;gap:16px;margin-bottom:16px}
+.col-1{grid-template-columns:1fr}
+.col-2{grid-template-columns:1fr 1fr}
+.col-3-1{grid-template-columns:2fr 1fr}
+.col-1-1-1{grid-template-columns:1fr 1fr 1fr}
+.chart-box{background:var(--surface);border-radius:var(--radius);
+           padding:16px;box-shadow:var(--shadow)}
+.chart-box h3{font-size:13px;font-weight:700;color:var(--blue);
+              text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+
+/* ── Tabela ─────────────────────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow);
+          background:var(--surface);margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--navy);color:#fff;padding:10px 14px;
+         text-align:left;font-weight:600;font-size:12px;white-space:nowrap}
+tbody tr:nth-child(even){background:#f7f9fc}
+tbody tr:hover{background:#edf2f8}
+tbody td{padding:9px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
+
+/* ── Loading / error ────────────────────────────────────────────────────── */
+#loading{position:fixed;inset:0;background:rgba(26,58,92,.92);
+         display:flex;flex-direction:column;align-items:center;
+         justify-content:center;z-index:999;color:#fff;gap:16px}
+#loading .spinner{width:46px;height:46px;border:5px solid rgba(255,255,255,.25);
+                  border-top-color:var(--gold);border-radius:50%;
+                  animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{font-size:15px;color:#c8d8ea}
+
+#cfg-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);
+           display:flex;align-items:center;justify-content:center;z-index:1000}
+.cfg-box{background:#fff;border-radius:12px;padding:32px 36px;
+         max-width:480px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.cfg-box h2{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.cfg-box p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.cfg-box label{font-size:12px;font-weight:700;color:var(--navy);
+               text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.cfg-box input{width:100%;padding:10px 12px;border:1.5px solid var(--border);
+               border-radius:6px;font-size:13px;margin-bottom:14px;outline:none}
+.cfg-box input:focus{border-color:var(--blue)}
+.cfg-btn{width:100%;padding:12px;background:var(--navy);color:#fff;
+         font-size:14px;font-weight:700;border:none;border-radius:8px;
+         cursor:pointer;transition:background .2s}
+.cfg-btn:hover{background:var(--blue)}
+.cfg-err{color:var(--err);font-size:12px;margin-top:8px;display:none}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+#footer{text-align:center;font-size:11px;color:#aaa;
+        border-top:1px solid var(--border);padding:20px 0;margin-top:32px}
+
+/* ── Responsivo ─────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  :root{--sidebar:56px}
+  .sb-brand .title,.sb-brand .sub,.sb-nav li a span,.sb-footer{display:none}
+  .sb-nav li a{padding:14px;font-size:0}
+  .sb-nav li a::before{content:attr(data-icon);font-size:18px}
+  #main{padding:18px 14px}
+  .col-2,.col-3-1,.col-1-1-1{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  #app-header{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Loading overlay ───────────────────────────────────────────────────── -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Carregando dados...</p>
+</div>
+
+<!-- ── Modal de configuração (primeira vez) ──────────────────────────────── -->
+<div id="cfg-modal" style="display:none">
+  <div class="cfg-box">
+    <h2>📊 Configurar Supabase</h2>
+    <p>Informe as credenciais do seu projeto Supabase.<br>
+       A chave <strong>anon/public</strong> é segura para uso aqui — RLS está ativo.</p>
+    <label>Project URL</label>
+    <input id="cfg-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co"/>
+    <label>Anon Key</label>
+    <input id="cfg-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."/>
+    <button class="cfg-btn" onclick="saveConfig()">Conectar →</button>
+    <p class="cfg-err" id="cfg-err">Não foi possível conectar. Verifique as credenciais.</p>
+  </div>
+</div>
+
+<!-- ── Sidebar ───────────────────────────────────────────────────────────── -->
+<nav id="sidebar">
+  <div class="sb-brand">
+    <div class="title">📊 BI Omnichannel</div>
+    <div class="sub">Loja de Roupas · 2025</div>
+  </div>
+  <ul class="sb-nav">
+    <li><a href="#" data-page="executivo"   data-icon="📈" class="active">📈&nbsp; Executivo</a></li>
+    <li><a href="#" data-page="marketing"   data-icon="📣">📣&nbsp; Marketing</a></li>
+    <li><a href="#" data-page="produtos"    data-icon="👗">👗&nbsp; Produtos</a></li>
+    <li><a href="#" data-page="clientes"    data-icon="👥">👥&nbsp; Clientes</a></li>
+    <li><a href="#" data-page="diagnostico" data-icon="🔍">🔍&nbsp; Diagnóstico</a></li>
+  </ul>
+  <div class="sb-footer">
+    📅 Jan–Jun 2025<br>
+    🎓 Projeto Acadêmico<br>
+    ⚠️ Dados sintéticos
+  </div>
+</nav>
+
+<!-- ── Conteúdo principal ─────────────────────────────────────────────────── -->
+<main id="main">
+  <header id="app-header">
+    <div>
+      <h1>Inteligência de Negócios — Loja de Roupas Omnichannel</h1>
+      <div class="sub">Análise de Conversão Digital e Custo de Aquisição de Clientes &middot; Jan–Jun 2025</div>
+    </div>
+    <div class="badge">Dados Sintéticos — Uso Acadêmico</div>
+  </header>
+
+  <!-- EXECUTIVO -->
+  <section id="page-executivo" class="page active">
+    <div class="page-label">Página 1</div>
+    <div class="page-title">Visão Executiva</div>
+    <div class="page-desc">Panorama geral do desempenho do e-commerce · Jan–Jun 2025</div>
+    <div class="kpi-grid" id="kpi-exec"></div>
+    <div class="chart-row col-3-1">
+      <div class="chart-box"><h3>Receita Mensal &amp; Taxa de Conversão</h3><div id="ch-receita-conv" style="height:320px"></div></div>
+      <div class="chart-box"><h3>Conversão vs. Meta</h3><div id="ch-gauge" style="height:320px"></div></div>
+    </div>
+    <div class="chart-row col-1">
+      <div class="chart-box"><h3>Pedidos por Mês</h3><div id="ch-pedidos-mes" style="height:240px"></div></div>
+    </div>
+  </section>
+
+  <!-- MARKETING -->
+  <section id="page-marketing" class="page">
+    <div class="page-label">Página 2</div>
+    <div class="page-title">Marketing</div>
+    <div class="page-desc">Desempenho de campanhas, CAC por canal e ROI de investimentos</div>
+    <div class="kpi-grid" id="kpi-mkt"></div>
+    <div class="chart-row col-2">
+      <div class="chart-box"><h3>CAC por Canal de Aquisição</h3><div id="ch-cac-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>ROI por Campanha (top 8)</h3><div id="ch-roi-camp" style="height:300px"></div></div>
+    </div>
+    <div class="chart-row col-1">
+      <div class="chart-box"><h3>Investimento em Marketing vs. Novos Clientes por Mês</h3><div id="ch-invest-mes" style="height:260px"></div></div>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-campanhas"></table></div>
+  </section>
+
+  <!-- PRODUTOS -->
+  <section id="page-produtos" class="page">
+    <div class="page-label">Página 3</div>
+    <div class="page-title">Produtos</div>
+    <div class="page-desc">Mix de produtos, receita por categoria, margem e descontos</div>
+    <div class="kpi-grid" id="kpi-prod"></div>
+    <div class="chart-row col-2">
+      <div class="chart-box"><h3>Receita por Categoria (R$)</h3><div id="ch-receita-cat" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Desconto Médio por Categoria (%)</h3><div id="ch-desconto-cat" style="height:300px"></div></div>
+    </div>
+    <div class="chart-row col-2">
+      <div class="chart-box"><h3>Margem Bruta por Categoria (%)</h3><div id="ch-margem-cat" style="height:280px"></div></div>
+      <div class="chart-box"><h3>Ticket Médio vs. Volume de Pedidos</h3><div id="ch-scatter-prod" style="height:280px"></div></div>
+    </div>
+  </section>
+
+  <!-- CLIENTES -->
+  <section id="page-clientes" class="page">
+    <div class="page-label">Página 4</div>
+    <div class="page-title">Clientes</div>
+    <div class="page-desc">Perfil, distribuição geográfica e comportamento da base de clientes</div>
+    <div class="kpi-grid" id="kpi-cli"></div>
+    <div class="chart-row col-2">
+      <div class="chart-box"><h3>Clientes por Canal de Aquisição</h3><div id="ch-cli-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Distribuição por Faixa de Renda</h3><div id="ch-renda" style="height:300px"></div></div>
+    </div>
+    <div class="chart-row col-2">
+      <div class="chart-box"><h3>Top 12 Estados</h3><div id="ch-cli-uf" style="height:280px"></div></div>
+      <div class="chart-box"><h3>Score de Fidelidade por Canal</h3><div id="ch-fidelidade" style="height:280px"></div></div>
+    </div>
+  </section>
+
+  <!-- DIAGNÓSTICO -->
+  <section id="page-diagnostico" class="page">
+    <div class="page-label">Página 5</div>
+    <div class="page-title">Diagnóstico</div>
+    <div class="page-desc">Investigação das causas da baixa conversão e CAC elevado</div>
+    <div class="kpi-grid" id="kpi-diag"></div>
+    <div class="chart-row col-1">
+      <div class="chart-box"><h3>Funil de Conversão — Jornada Completa do Cliente</h3><div id="ch-funil" style="height:360px"></div></div>
+    </div>
+    <div class="chart-row col-2">
+      <div class="chart-box"><h3>Conversão por Dispositivo</h3><div id="ch-conv-disp" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Conversão por Canal de Origem</h3><div id="ch-conv-canal" style="height:300px"></div></div>
+    </div>
+    <div class="chart-row col-2">
+      <div class="chart-box"><h3>Funil por Dispositivo (volume)</h3><div id="ch-funil-disp" style="height:280px"></div></div>
+      <div class="chart-box"><h3>Motivos de Atendimento</h3><div id="ch-atend" style="height:280px"></div></div>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-atend"></table></div>
+  </section>
+
+  <footer id="footer">
+    Projeto Acadêmico de Business Intelligence &mdash;
+    Dados Sintéticos &mdash; Uso Exclusivamente Educacional
+  </footer>
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIGURAÇÃO — altere as duas linhas abaixo com as credenciais Supabase
+// Se deixar vazio, um modal pedirá as credenciais no primeiro acesso.
+// ═══════════════════════════════════════════════════════════════════════════
+const HARD_URL = "";   // ex: "https://xxxx.supabase.co"
+const HARD_KEY = "";   // ex: "eyJhbGci..."
+
+// ── Paleta ──────────────────────────────────────────────────────────────────
+const C = ["#2e6da4","#e8a020","#1e7e46","#c0392b","#8e44ad","#16a085","#d35400","#2c3e50"];
+const LAYOUT = {
+  paper_bgcolor:"#fff", plot_bgcolor:"#fff",
+  margin:{t:20,b:40,l:50,r:20},
+  font:{family:"'Segoe UI',Arial,sans-serif",size:12,color:"#1c2b3a"},
+  legend:{orientation:"h",y:-0.25},
+};
+const CFG = {responsive:true,displayModeBar:false};
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const brl  = v => "R$ " + (+v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+const num  = v => (+v).toLocaleString("pt-BR");
+const pct  = v => (+v).toFixed(2) + "%";
+const roi  = v => (+v).toFixed(2) + "×";
+
+function kpiCard(label,value,sub,cls=""){
+  return `<div class="kpi ${cls}">
+    <div class="kpi-lbl">${label}</div>
+    <div class="kpi-val">${value}</div>
+    <div class="kpi-sub">${sub}</div>
+  </div>`;
+}
+function setKpi(id,html){document.getElementById(id).innerHTML=html}
+
+function tableHTML(cols,rows){
+  const head = `<thead><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead>`;
+  const body = `<tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  return head+body;
+}
+
+// ── Supabase init ─────────────────────────────────────────────────────────────
+let sb;
+async function query(table){
+  const {data,error} = await sb.from(table).select("*");
+  if(error) throw error;
+  return data;
+}
+
+// ── Config modal ──────────────────────────────────────────────────────────────
+function saveConfig(){
+  const url = document.getElementById("cfg-url").value.trim();
+  const key = document.getElementById("cfg-key").value.trim();
+  if(!url||!key){document.getElementById("cfg-err").style.display="block";return;}
+  sessionStorage.setItem("sb_url",url);
+  sessionStorage.setItem("sb_key",key);
+  document.getElementById("cfg-modal").style.display="none";
+  initApp(url,key);
+}
+
+// ── Navegação ─────────────────────────────────────────────────────────────────
+document.querySelectorAll(".sb-nav a").forEach(a=>{
+  a.addEventListener("click",e=>{
+    e.preventDefault();
+    document.querySelectorAll(".sb-nav a").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+    a.classList.add("active");
+    document.getElementById("page-"+a.dataset.page).classList.add("active");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER — Executivo
+// ═══════════════════════════════════════════════════════════════════════════
+function renderExecutivo(D){
+  const k = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
+  const m = [...D.mensal].sort((a,b)=>a.mes_num-b.mes_num);
+
+  const conv     = +k.taxa_conversao.valor;
+  const metaConv = +k.taxa_conversao.meta;
+  const cac      = +k.cac.valor;
+  const metaCac  = +k.cac.meta;
+
+  setKpi("kpi-exec",
+    kpiCard("Receita Total",         brl(k.receita_total.valor),         "Jan–Jun 2025") +
+    kpiCard("Pedidos Válidos",        num(k.pedidos.valor),               "Pedidos processados") +
+    kpiCard("Sessões no Site",        num(k.sessoes.valor),               "Visitas ao e-commerce") +
+    kpiCard("Invest. Marketing",      brl(k.investimento_marketing.valor),"Total acumulado") +
+    kpiCard("Taxa de Conversão",      pct(conv),
+      `Meta: ${pct(metaConv)} | Gap: ${(conv-metaConv).toFixed(2)} p.p.`,"err") +
+    kpiCard("CAC",                    brl(cac),
+      `Meta: ${brl(metaCac)} | Gap: ${brl(cac-metaCac)}`,"err") +
+    kpiCard("Ticket Médio",           brl(k.ticket_medio.valor),          "2,3× o CAC atual ▲","ok") +
+    kpiCard("ROI de Marketing",       roi(k.roi_marketing.valor),         "R$ 4,69 por R$ 1,00 invest.","ok")
+  );
+
+  // Receita + Conversão
+  Plotly.newPlot("ch-receita-conv",[
+    {type:"bar",  name:"Receita (R$)",   x:m.map(r=>r.mes), y:m.map(r=>r.receita),
+     marker:{color:C[0],opacity:.85}, yaxis:"y"},
+    {type:"scatter",name:"Conversão (%)",x:m.map(r=>r.mes), y:m.map(r=>r.taxa_conversao),
+     mode:"lines+markers",line:{color:C[1],width:3},marker:{size:7},yaxis:"y2"},
+    {type:"scatter",name:"Meta 3,06%",   x:m.map(r=>r.mes), y:m.map(()=>3.06),
+     mode:"lines",line:{color:"#c0392b",dash:"dash",width:2},yaxis:"y2",showlegend:true},
+  ],{...LAYOUT,
+    yaxis:{title:"Receita (R$)",tickprefix:"R$ ",separatethousands:true},
+    yaxis2:{title:"Conversão (%)",overlaying:"y",side:"right",ticksuffix:"%",showgrid:false},
+  },CFG);
+
+  // Gauge
+  Plotly.newPlot("ch-gauge",[{
+    type:"indicator",mode:"gauge+number+delta",value:conv,
+    delta:{reference:metaConv,valueformat:".2f",suffix:" p.p.",
+           increasing:{color:"#1e7e46"},decreasing:{color:"#c0392b"}},
+    number:{suffix:"%",valueformat:".2f"},
+    title:{text:"Conversão Atual<br><span style='font-size:12px;color:#888'>Meta: 3,06%</span>"},
+    gauge:{axis:{range:[0,5],ticksuffix:"%"},bar:{color:"#c0392b"},
+      steps:[{range:[0,metaConv],color:"#fde8e6"},{range:[metaConv,5],color:"#d4edda"}],
+      threshold:{line:{color:"#1e7e46",width:3},thickness:.85,value:metaConv}},
+  }],{paper_bgcolor:"#fff",margin:{t:80,b:20,l:20,r:20},font:LAYOUT.font},CFG);
+
+  // Pedidos por mês
+  Plotly.newPlot("ch-pedidos-mes",[{
+    type:"bar",x:m.map(r=>r.mes),y:m.map(r=>r.pedidos),
+    marker:{color:C[0]},text:m.map(r=>num(r.pedidos)),textposition:"outside",
+    name:"Pedidos",
+  }],{...LAYOUT,yaxis:{title:"Pedidos"}},CFG);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER — Marketing
+// ═══════════════════════════════════════════════════════════════════════════
+function renderMarketing(D){
+  const k    = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
+  const cc   = [...D.cac_canal].filter(r=>r.cac>0).sort((a,b)=>a.cac-b.cac);
+  const camp = [...D.campanhas].sort((a,b)=>b.roi-a.roi).slice(0,8);
+  const m    = [...D.mensal].sort((a,b)=>a.mes_num-b.mes_num);
+
+  setKpi("kpi-mkt",
+    kpiCard("Invest. Total",   brl(k.investimento_marketing.valor),"Todas as plataformas") +
+    kpiCard("ROI Consolidado", roi(k.roi_marketing.valor),         "R$ 4,69 por R$ 1 invest.","ok") +
+    kpiCard("CAC Médio",       brl(k.cac.valor),
+      `Meta: ${brl(k.cac.meta)}`,"err") +
+    kpiCard("Novos Clientes",  num(k.novos_clientes.valor),        "No período")
+  );
+
+  // CAC por canal
+  const cacCores = cc.map(r=>+r.cac<=113.46?"#1e7e46":"#c0392b");
+  Plotly.newPlot("ch-cac-canal",[{
+    type:"bar",orientation:"h",
+    x:cc.map(r=>r.cac), y:cc.map(r=>r.canal),
+    marker:{color:cacCores},
+    text:cc.map(r=>"R$ "+Math.round(r.cac)),
+    textposition:"outside",name:"CAC",
+  }],{...LAYOUT,
+    shapes:[{type:"line",x0:113.46,x1:113.46,y0:-0.5,y1:cc.length-.5,
+             line:{color:"#1a3a5c",dash:"dash",width:2}}],
+    annotations:[{x:113.46,y:cc.length,text:"Meta R$113",
+                  showarrow:false,font:{color:"#1a3a5c",size:11}}],
+    xaxis:{title:"CAC (R$)"},
+  },CFG);
+
+  // ROI por campanha
+  Plotly.newPlot("ch-roi-camp",[{
+    type:"bar",orientation:"h",
+    x:camp.map(r=>r.roi), y:camp.map(r=>r.campanha),
+    marker:{color:C[0]},
+    text:camp.map(r=>r.roi.toFixed(1)+"×"),
+    textposition:"outside",name:"ROI",
+  }],{...LAYOUT,xaxis:{title:"ROI (×)"}},CFG);
+
+  // Investimento vs Novos Clientes
+  Plotly.newPlot("ch-invest-mes",[
+    {type:"bar",name:"Invest. Marketing (R$)",
+     x:m.map(r=>r.mes),y:m.map(r=>r.investimento_marketing),
+     marker:{color:C[0],opacity:.8},yaxis:"y"},
+    {type:"scatter",name:"Novos Clientes",
+     x:m.map(r=>r.mes),y:m.map(r=>r.novos_clientes),
+     mode:"lines+markers",line:{color:C[1],width:3},marker:{size:7},yaxis:"y2"},
+  ],{...LAYOUT,
+    yaxis:{title:"Investimento (R$)",tickprefix:"R$ "},
+    yaxis2:{title:"Novos Clientes",overlaying:"y",side:"right",showgrid:false},
+  },CFG);
+
+  // Tabela campanhas
+  const cols = ["Campanha","Plataforma","Investimento","Receita Atrib.","Novos Clientes","CAC","ROI"];
+  const rows = [...D.campanhas].sort((a,b)=>b.roi-a.roi).map(r=>[
+    r.campanha, r.plataforma,
+    brl(r.investimento), brl(r.receita_atribuida),
+    num(r.novos_clientes), brl(r.cac), roi(r.roi),
+  ]);
+  document.getElementById("tbl-campanhas").innerHTML = tableHTML(cols,rows);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER — Produtos
+// ═══════════════════════════════════════════════════════════════════════════
+function renderProdutos(D){
+  const k    = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
+  const cats = [...D.categorias].sort((a,b)=>b.receita-a.receita);
+
+  setKpi("kpi-prod",
+    kpiCard("Receita Total",  brl(k.receita_total.valor), "Jan–Jun 2025") +
+    kpiCard("Itens Vendidos", "13.279",                   "Linhas de pedido") +
+    kpiCard("Ticket Médio",   brl(k.ticket_medio.valor),  "Valor médio por pedido","ok") +
+    kpiCard("SKUs Ativos",    "96",                       "Produtos no catálogo")
+  );
+
+  // Receita por categoria
+  Plotly.newPlot("ch-receita-cat",[{
+    type:"bar",orientation:"h",
+    x:cats.map(r=>r.receita), y:cats.map(r=>r.categoria),
+    marker:{color:C[0]},
+    text:cats.map(r=>"R$ "+Math.round(r.receita/1000)+"k"),
+    textposition:"outside",name:"Receita",
+  }],{...LAYOUT,xaxis:{title:"Receita (R$)"}},CFG);
+
+  // Desconto médio
+  const dsc = [...cats].sort((a,b)=>b.desconto_medio_pct-a.desconto_medio_pct);
+  Plotly.newPlot("ch-desconto-cat",[{
+    type:"bar",
+    x:dsc.map(r=>r.categoria), y:dsc.map(r=>r.desconto_medio_pct),
+    marker:{color:dsc.map(r=>r.desconto_medio_pct>12?"#c0392b":"#e8a020")},
+    text:dsc.map(r=>r.desconto_medio_pct.toFixed(1)+"%"),
+    textposition:"outside",name:"Desconto",
+  }],{...LAYOUT,yaxis:{title:"Desconto (%)"}},CFG);
+
+  // Margem
+  Plotly.newPlot("ch-margem-cat",[{
+    type:"bar",
+    x:cats.map(r=>r.categoria), y:cats.map(r=>r.margem_pct),
+    marker:{color:"#1e7e46"},
+    text:cats.map(r=>r.margem_pct.toFixed(1)+"%"),
+    textposition:"outside",name:"Margem",
+  }],{...LAYOUT,yaxis:{title:"Margem (%)"}},CFG);
+
+  // Scatter
+  Plotly.newPlot("ch-scatter-prod",[{
+    type:"scatter",mode:"markers+text",
+    x:cats.map(r=>r.ticket_medio), y:cats.map(r=>r.pedidos),
+    text:cats.map(r=>r.categoria),
+    textposition:"top center",
+    marker:{size:cats.map(r=>Math.sqrt(r.receita)/20),
+            color:C,opacity:.8},
+    name:"",
+  }],{...LAYOUT,
+    xaxis:{title:"Ticket Médio (R$)"},
+    yaxis:{title:"Pedidos"},
+  },CFG);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER — Clientes
+// ═══════════════════════════════════════════════════════════════════════════
+function renderClientes(D){
+  const k   = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
+  const cc  = [...D.cli_canal].sort((a,b)=>b.total_clientes-a.total_clientes);
+  const uf  = [...D.cli_uf].sort((a,b)=>b.total_clientes-a.total_clientes).slice(0,12);
+  const rnd = D.renda;
+  const ativ = (+k.novos_clientes.valor / +k.clientes_cadastrados.valor * 100).toFixed(1);
+
+  setKpi("kpi-cli",
+    kpiCard("Clientes Cadastrados", num(k.clientes_cadastrados.valor), "Base total CRM") +
+    kpiCard("Clientes Compradores", num(k.novos_clientes.valor),       "Com ao menos 1 pedido") +
+    kpiCard("Taxa de Ativação",     ativ+"%",      "Cadastrados que compraram","ok") +
+    kpiCard("Clientes s/ E-mail",   "~8%",         "Qualidade cadastral","err")
+  );
+
+  // Clientes por canal
+  Plotly.newPlot("ch-cli-canal",[{
+    type:"bar",x:cc.map(r=>r.canal),y:cc.map(r=>r.total_clientes),
+    marker:{color:C[0]},text:cc.map(r=>r.total_clientes),
+    textposition:"outside",name:"Clientes",
+  }],{...LAYOUT,yaxis:{title:"Clientes"}},CFG);
+
+  // Renda (donut)
+  Plotly.newPlot("ch-renda",[{
+    type:"pie",labels:rnd.map(r=>r.faixa),values:rnd.map(r=>r.total_clientes),
+    hole:.42,marker:{colors:C},textinfo:"percent+label",
+  }],{paper_bgcolor:"#fff",margin:{t:20,b:20,l:20,r:20},showlegend:false},CFG);
+
+  // UF
+  Plotly.newPlot("ch-cli-uf",[{
+    type:"bar",x:uf.map(r=>r.uf),y:uf.map(r=>r.total_clientes),
+    marker:{color:"#1a3a5c"},text:uf.map(r=>r.total_clientes),
+    textposition:"outside",name:"Clientes",
+  }],{...LAYOUT,xaxis:{title:"UF"},yaxis:{title:"Clientes"}},CFG);
+
+  // Score fidelidade
+  const fid = [...cc].sort((a,b)=>b.score_fidelidade_medio-a.score_fidelidade_medio);
+  Plotly.newPlot("ch-fidelidade",[{
+    type:"bar",x:fid.map(r=>r.canal),y:fid.map(r=>r.score_fidelidade_medio),
+    marker:{color:fid.map(r=>r.score_fidelidade_medio>=60?"#1e7e46":"#e8a020")},
+    text:fid.map(r=>r.score_fidelidade_medio.toFixed(0)),
+    textposition:"outside",name:"Score",
+  }],{...LAYOUT,yaxis:{title:"Score (0–100)",range:[0,90]}},CFG);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER — Diagnóstico
+// ═══════════════════════════════════════════════════════════════════════════
+function renderDiagnostico(D){
+  const funil  = D.funil;
+  const atend  = [...D.atendimento].sort((a,b)=>b.quantidade-a.quantidade);
+  const cc     = [...D.conv_canal].sort((a,b)=>b.taxa_conversao-a.taxa_conversao);
+
+  const mob  = funil.find(r=>r.dispositivo==="Mobile");
+  const desk = funil.find(r=>r.dispositivo==="Desktop");
+  const convM = (mob.pedidos/mob.sessoes*100).toFixed(2);
+  const convD = (desk.pedidos/desk.sessoes*100).toFixed(2);
+
+  setKpi("kpi-diag",
+    kpiCard("Conversão Mobile",      convM+"%",       "Maior volume, menor eficiência","err") +
+    kpiCard("Conversão Desktop",     convD+"%",       "Menor volume, maior eficiência","ok") +
+    kpiCard("Tickets de Suporte",    "900",           "Registros no período") +
+    kpiCard("Principal Motivo Suporte","Troca Tamanho","31,7% dos atendimentos","err")
+  );
+
+  // Funil completo
+  const totals = funil.reduce((acc,r)=>{
+    acc.sessoes   += r.sessoes;
+    acc.add_to_cart+=r.add_to_cart;
+    acc.checkout  += r.checkout;
+    acc.pedidos   += r.pedidos;
+    return acc;
+  },{sessoes:0,add_to_cart:0,checkout:0,pedidos:0});
+
+  Plotly.newPlot("ch-funil",[{
+    type:"funnel",
+    y:["Sessões","Add to Cart","Checkout","Pedidos"],
+    x:[totals.sessoes,totals.add_to_cart,totals.checkout,totals.pedidos],
+    textinfo:"value+percent initial",
+    marker:{color:["#2e6da4","#e8a020","#c0392b","#1e7e46"]},
+    connector:{line:{color:"#dde4ed",width:2}},
+  }],{paper_bgcolor:"#fff",margin:{t:20,b:30,l:140,r:80}},CFG);
+
+  // Conversão por dispositivo
+  const dispConv = funil.map(r=>({d:r.dispositivo,cv:r.pedidos/r.sessoes*100}));
+  Plotly.newPlot("ch-conv-disp",[{
+    type:"bar",
+    x:dispConv.map(r=>r.d), y:dispConv.map(r=>r.cv),
+    marker:{color:dispConv.map(r=>r.cv<2.66?"#c0392b":"#1e7e46")},
+    text:dispConv.map(r=>r.cv.toFixed(2)+"%"),
+    textposition:"outside",name:"Conversão",
+  }],{...LAYOUT,
+    yaxis:{title:"Conversão (%)",range:[0,5]},
+    shapes:[{type:"line",x0:-0.5,x1:2.5,y0:2.66,y1:2.66,
+             line:{color:"#1a3a5c",dash:"dash",width:2}}],
+    annotations:[{x:2.4,y:2.66,text:"Média 2,66%",showarrow:false,
+                  font:{size:11,color:"#1a3a5c"},xanchor:"right"}],
+  },CFG);
+
+  // Conversão por canal
+  Plotly.newPlot("ch-conv-canal",[{
+    type:"bar",orientation:"h",
+    x:cc.map(r=>r.taxa_conversao), y:cc.map(r=>r.canal),
+    marker:{color:cc.map(r=>r.taxa_conversao>=2.66?"#1e7e46":"#c0392b")},
+    text:cc.map(r=>r.taxa_conversao.toFixed(2)+"%"),
+    textposition:"outside",name:"Conversão",
+  }],{...LAYOUT,
+    xaxis:{title:"Conversão (%)"},
+    shapes:[{type:"line",x0:2.66,x1:2.66,y0:-0.5,y1:cc.length-.5,
+             line:{color:"#1a3a5c",dash:"dash",width:2}}],
+  },CFG);
+
+  // Funil por dispositivo (grouped bar)
+  const etapas = ["sessoes","add_to_cart","checkout","pedidos"];
+  const labels  = ["Sessões","Add to Cart","Checkout","Pedidos"];
+  Plotly.newPlot("ch-funil-disp",
+    funil.map((r,i)=>({
+      type:"bar",name:r.dispositivo,
+      x:labels, y:etapas.map(e=>r[e]),
+      marker:{color:C[i]},
+    })),
+    {...LAYOUT,barmode:"group",yaxis:{title:"Volume"}},CFG
+  );
+
+  // Motivos atendimento
+  Plotly.newPlot("ch-atend",[{
+    type:"bar",orientation:"h",
+    x:atend.map(r=>r.quantidade), y:atend.map(r=>r.motivo),
+    marker:{color:C[3]},
+    text:atend.map(r=>r.percentual.toFixed(1)+"%"),
+    textposition:"outside",name:"Tickets",
+  }],{...LAYOUT,xaxis:{title:"Tickets"}},CFG);
+
+  // Tabela atendimento
+  const cols = ["Motivo","Qtd. Tickets","% do Total","Resolução Média"];
+  const rows = atend.map(r=>[
+    r.motivo, num(r.quantidade),
+    r.percentual.toFixed(1)+"%",
+    r.resolucao_media_dias.toFixed(1)+" dias",
+  ]);
+  document.getElementById("tbl-atend").innerHTML = tableHTML(cols,rows);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MAIN — inicialização
+// ═══════════════════════════════════════════════════════════════════════════
+async function initApp(url, key){
+  document.getElementById("loading").style.display="flex";
+  try {
+    sb = supabase.createClient(url, key);
+
+    // Carrega todas as tabelas em paralelo
+    const [kpis,mensal,cac_canal,campanhas,categorias,funil,
+           cli_canal,cli_uf,renda,atendimento,conv_canal] = await Promise.all([
+      query("kpis_resumo"), query("receita_mensal"), query("cac_por_canal"),
+      query("roi_por_campanha"), query("receita_por_categoria"), query("funil_dispositivo"),
+      query("clientes_por_canal"), query("clientes_por_uf"), query("renda_faixa"),
+      query("motivos_atendimento"), query("conversao_por_canal"),
+    ]);
+
+    const D = {kpis,mensal,cac_canal,campanhas,categorias,funil,
+               cli_canal,cli_uf,renda,atendimento,conv_canal};
+
+    renderExecutivo(D);
+    renderMarketing(D);
+    renderProdutos(D);
+    renderClientes(D);
+    renderDiagnostico(D);
+
+  } catch(e){
+    alert("Erro ao carregar dados: " + e.message +
+          "\n\nVerifique as credenciais e se o SQL de setup foi executado no Supabase.");
+  } finally {
+    document.getElementById("loading").style.display="none";
+  }
+}
+
+// ── Ponto de entrada ──────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", ()=>{
+  const url = HARD_URL || sessionStorage.getItem("sb_url");
+  const key = HARD_KEY || sessionStorage.getItem("sb_key");
+
+  if(url && key){
+    initApp(url, key);
+  } else {
+    document.getElementById("loading").style.display="none";
+    document.getElementById("cfg-modal").style.display="flex";
+  }
+});
+</script>
+</body>
+</html>

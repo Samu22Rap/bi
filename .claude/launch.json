@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "BI Dashboard (HTML estático)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "3000", "--directory", "bi_dashboard"],
+      "port": 3000
+    },
+    {
+      "name": "Streamlit App",
+      "runtimeExecutable": "streamlit",
+      "runtimeArgs": ["run", "bi_dashboard/app.py", "--server.port", "8501"],
+      "port": 8501
+    }
+  ]
+}

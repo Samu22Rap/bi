@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(pip install *)",
+      "Bash(python -m pip show pdfplumber)",
+      "Bash(python -c \"import pdfplumber; print\\('ok'\\)\")",
+      "Bash(where python *)",
+      "Bash(C:\\\\Users\\\\Samuel\\\\AppData\\\\Local\\\\Python\\\\bin\\\\python.exe -m pip install pdfplumber openpyxl python-docx)",
+      "PowerShell($py = \"C:\\\\Users\\\\Samuel\\\\AppData\\\\Local\\\\Python\\\\bin\\\\python.exe\"; & $py --version)",
+      "Bash(git -C \"C:\\\\Users\\\\Samuel\\\\Documents\\\\estudos\\\\.claude\\\\worktrees\\\\hopeful-bohr-5144e2\" remote -v)",
+      "Bash(git -C \"C:\\\\Users\\\\Samuel\\\\Documents\\\\estudos\\\\.claude\\\\worktrees\\\\hopeful-bohr-5144e2\" status)",
+      "Bash(git -C \"C:\\\\Users\\\\Samuel\\\\Documents\\\\estudos\\\\.claude\\\\worktrees\\\\hopeful-bohr-5144e2\" log --oneline -3)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
