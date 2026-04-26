@@ -4,131 +4,100 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>BI | Loja de Roupas Omnichannel</title>
-
-<!-- Supabase JS (browser) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<!-- Plotly.js -->
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
-
 <style>
-/* ── Reset & variáveis ──────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --accent:#4f6ef7;
-  --accent-dim:#eef0fe;
-  --ok:#059669;    --ok-bg:#ecfdf5;    --ok-dim:#d1fae5;
-  --err:#dc2626;   --err-bg:#fff1f0;   --err-dim:#fecaca;
-  --warn:#d97706;  --warn-bg:#fffbeb;
-  --bg:#f3f4f6;
-  --surface:#ffffff;
-  --border:#e5e7eb;
-  --muted:#6b7280;
-  --text:#111827;
-  --text-light:#374151;
-  --sidebar-bg:#111827;
-  --sidebar-text:#9ca3af;
-  --sidebar-active:#ffffff;
-  --sidebar-hover:rgba(255,255,255,.06);
-  --sidebar-w:224px;
-  --radius:10px;
+  --accent:#4f6ef7; --accent-dim:#eef0fe;
+  --ok:#059669; --ok-bg:#ecfdf5; --ok-dim:#d1fae5;
+  --err:#dc2626; --err-bg:#fff1f0; --err-dim:#fecaca;
+  --bg:#f3f4f6; --surface:#fff;
+  --border:#e5e7eb; --muted:#6b7280;
+  --text:#111827; --text-light:#374151;
+  --sidebar-bg:#111827; --sidebar-text:#9ca3af;
+  --sidebar-w:224px; --radius:10px;
   --shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
   --shadow-sm:0 1px 3px rgba(0,0,0,.08);
 }
 html{scroll-behavior:smooth}
-body{
-  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  background:var(--bg);color:var(--text);
-  display:flex;min-height:100vh;font-size:14px;line-height:1.5
-}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);
+     color:var(--text);display:flex;min-height:100vh;font-size:14px;line-height:1.5}
 
-/* ── Sidebar ────────────────────────────────────────────────────────────── */
-#sidebar{
-  width:var(--sidebar-w);background:var(--sidebar-bg);
-  display:flex;flex-direction:column;position:fixed;top:0;left:0;
-  height:100vh;z-index:100;overflow-y:auto
-}
-.sb-brand{
-  padding:22px 20px 20px;
-  border-bottom:1px solid rgba(255,255,255,.07)
-}
-.sb-brand .title{
-  font-size:14px;font-weight:700;color:#fff;letter-spacing:.3px
-}
-.sb-brand .sub{
-  font-size:11px;color:var(--sidebar-text);margin-top:3px
-}
-.sb-section{
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:1px;color:#4b5563;padding:18px 20px 6px
-}
+/* ── Sidebar ── */
+#sidebar{width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;
+         flex-direction:column;position:fixed;top:0;left:0;height:100vh;
+         z-index:100;overflow-y:auto}
+.sb-brand{padding:22px 20px 20px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-brand .title{font-size:14px;font-weight:700;color:#fff;letter-spacing:.3px}
+.sb-brand .sub{font-size:11px;color:var(--sidebar-text);margin-top:3px}
+.sb-section{font-size:10px;font-weight:700;text-transform:uppercase;
+            letter-spacing:1px;color:#4b5563;padding:18px 20px 6px}
 .sb-nav{list-style:none;padding:0 10px 14px;flex:1}
-.sb-nav li a{
-  display:flex;align-items:center;gap:9px;
-  padding:9px 12px;color:var(--sidebar-text);text-decoration:none;
-  font-size:13px;font-weight:500;border-radius:7px;
-  transition:background .12s,color .12s;margin-bottom:1px
-}
-.sb-nav li a:hover{background:var(--sidebar-hover);color:#e5e7eb}
-.sb-nav li a.active{background:rgba(79,110,247,.18);color:var(--sidebar-active)}
-.sb-nav li a .nav-dot{
-  width:6px;height:6px;border-radius:50%;background:var(--sidebar-text);
-  flex-shrink:0;transition:background .12s
-}
+.sb-nav li a{display:flex;align-items:center;gap:9px;padding:9px 12px;
+             color:var(--sidebar-text);text-decoration:none;font-size:13px;
+             font-weight:500;border-radius:7px;transition:background .12s,color .12s;
+             margin-bottom:1px}
+.sb-nav li a:hover{background:rgba(255,255,255,.06);color:#e5e7eb}
+.sb-nav li a.active{background:rgba(79,110,247,.18);color:#fff}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--sidebar-text);
+         flex-shrink:0;transition:background .12s}
 .sb-nav li a.active .nav-dot{background:var(--accent)}
-.sb-footer{
-  padding:14px 20px;font-size:11px;color:#4b5563;
-  border-top:1px solid rgba(255,255,255,.06);line-height:2
-}
+.sb-footer{padding:14px 20px;font-size:11px;color:#4b5563;
+           border-top:1px solid rgba(255,255,255,.06);line-height:2}
 
-/* ── Main ───────────────────────────────────────────────────────────────── */
+/* ── Main ── */
 #main{margin-left:var(--sidebar-w);flex:1;padding:28px 32px;max-width:1300px}
 
-/* ── Header ─────────────────────────────────────────────────────────────── */
-#app-header{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:16px;margin-bottom:24px;padding-bottom:20px;
-  border-bottom:1px solid var(--border)
-}
+/* ── Header ── */
+#app-header{display:flex;align-items:flex-start;justify-content:space-between;
+            gap:16px;margin-bottom:24px;padding-bottom:20px;
+            border-bottom:1px solid var(--border)}
 #app-header h1{font-size:18px;font-weight:700;color:var(--text);line-height:1.3}
 #app-header .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
-.badge{
-  background:var(--accent-dim);color:var(--accent);
-  font-size:11px;font-weight:600;padding:4px 12px;
-  border-radius:20px;white-space:nowrap;border:1px solid #c7d0fd
-}
+.badge{background:var(--accent-dim);color:var(--accent);font-size:11px;
+       font-weight:600;padding:4px 12px;border-radius:20px;
+       white-space:nowrap;border:1px solid #c7d0fd}
 
-/* ── Páginas ────────────────────────────────────────────────────────────── */
+/* ── Pages ── */
 .page{display:none}
 .page.active{display:block}
-.page-eyebrow{
-  font-size:11px;font-weight:600;text-transform:uppercase;
-  letter-spacing:1px;color:var(--accent);margin-bottom:4px
-}
-.page-title{
-  font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px
-}
-.page-desc{
-  font-size:13px;color:var(--muted);margin-bottom:22px;
-  padding-bottom:16px;border-bottom:1px solid var(--border)
-}
+.page-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;
+              letter-spacing:1px;color:var(--accent);margin-bottom:4px}
+.page-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.page-desc{font-size:13px;color:var(--muted);margin-bottom:16px;
+           padding-bottom:14px;border-bottom:1px solid var(--border)}
 
-/* ── KPI grid ───────────────────────────────────────────────────────────── */
-.kpi-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:14px;margin-bottom:24px
-}
-.kpi{
-  background:var(--surface);border-radius:var(--radius);
-  padding:18px 20px;box-shadow:var(--shadow-sm);
-  border:1px solid var(--border);transition:box-shadow .15s
-}
+/* ── Filter bar ── */
+.filter-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+            padding:10px 16px;background:var(--surface);
+            border:1px solid var(--border);border-radius:var(--radius);
+            margin-bottom:20px}
+.filter-group{display:flex;align-items:center;gap:6px}
+.filter-label{font-size:11px;font-weight:600;color:var(--muted);
+              text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.filter-select{border:1px solid var(--border);border-radius:6px;
+               padding:5px 30px 5px 10px;font-size:12.5px;color:var(--text);
+               background:var(--bg);cursor:pointer;outline:none;
+               appearance:none;min-width:150px;
+               background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C%2Fsvg%3E");
+               background-repeat:no-repeat;background-position:right 8px center}
+.filter-select:focus{border-color:var(--accent)}
+.filter-tag{font-size:11.5px;color:var(--muted);padding:3px 0}
+.filter-reset{margin-left:auto;font-size:12px;color:var(--accent);
+              cursor:pointer;background:none;border:1px solid var(--border);
+              padding:4px 10px;border-radius:6px;font-weight:500;transition:background .15s}
+.filter-reset:hover{background:var(--accent-dim);border-color:var(--accent)}
+
+/* ── KPI grid — 4 colunas fixas ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:var(--surface);border-radius:var(--radius);padding:18px 20px;
+     box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:box-shadow .15s}
 .kpi:hover{box-shadow:var(--shadow)}
-.kpi.ok {background:var(--ok-bg);border-color:var(--ok-dim)}
+.kpi.ok{background:var(--ok-bg);border-color:var(--ok-dim)}
 .kpi.err{background:var(--err-bg);border-color:var(--err-dim)}
-.kpi-lbl{
-  font-size:11px;font-weight:600;text-transform:uppercase;
-  letter-spacing:.7px;color:var(--muted);margin-bottom:7px
-}
+.kpi-lbl{font-size:11px;font-weight:600;text-transform:uppercase;
+         letter-spacing:.7px;color:var(--muted);margin-bottom:7px}
 .kpi-val{font-size:22px;font-weight:700;color:var(--text);line-height:1.1}
 .kpi.ok  .kpi-val{color:var(--ok)}
 .kpi.err .kpi-val{color:var(--err)}
@@ -136,100 +105,73 @@ body{
 .kpi.ok  .kpi-sub{color:#065f46}
 .kpi.err .kpi-sub{color:#991b1b}
 
-/* ── Charts grid ────────────────────────────────────────────────────────── */
+/* ── Charts ── */
 .chart-row{display:grid;gap:14px;margin-bottom:14px}
 .col-1{grid-template-columns:1fr}
 .col-2{grid-template-columns:1fr 1fr}
 .col-3-1{grid-template-columns:2fr 1fr}
-.col-1-1-1{grid-template-columns:1fr 1fr 1fr}
-.chart-box{
-  background:var(--surface);border-radius:var(--radius);
-  padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border)
-}
-.chart-box h3{
-  font-size:12.5px;font-weight:600;color:var(--text-light);
-  letter-spacing:.2px;margin-bottom:12px
-}
+.chart-box{background:var(--surface);border-radius:var(--radius);
+           padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.chart-box h3{font-size:12.5px;font-weight:600;color:var(--text-light);
+              letter-spacing:.2px;margin-bottom:12px}
 
-/* ── Tabela ─────────────────────────────────────────────────────────────── */
-.tbl-wrap{
-  overflow-x:auto;border-radius:var(--radius);
-  box-shadow:var(--shadow-sm);background:var(--surface);
-  border:1px solid var(--border);margin-top:14px
-}
+/* ── Tabela ── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow-sm);
+          background:var(--surface);border:1px solid var(--border);margin-top:14px}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{
-  background:#f9fafb;color:var(--muted);
-  padding:10px 16px;text-align:left;
-  font-weight:600;font-size:11px;
-  text-transform:uppercase;letter-spacing:.5px;
-  border-bottom:1px solid var(--border);white-space:nowrap
-}
+thead th{background:#f9fafb;color:var(--muted);padding:10px 16px;text-align:left;
+         font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+         border-bottom:1px solid var(--border);white-space:nowrap}
 tbody tr:hover{background:#f9fafb}
-tbody td{
-  padding:10px 16px;border-bottom:1px solid var(--border);
-  white-space:nowrap;color:var(--text-light)
-}
+tbody td{padding:10px 16px;border-bottom:1px solid var(--border);
+         white-space:nowrap;color:var(--text-light)}
 tbody tr:last-child td{border-bottom:none}
 
-/* ── Loading ──────────────────────────────────────────────────────────────── */
-#loading{
-  position:fixed;inset:0;background:rgba(17,24,39,.9);
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;z-index:999;color:#fff;gap:14px
-}
-#loading .spinner{
-  width:40px;height:40px;border:3px solid rgba(255,255,255,.15);
-  border-top-color:var(--accent);border-radius:50%;
-  animation:spin .75s linear infinite
-}
+/* ── Loading ── */
+#loading{position:fixed;inset:0;background:rgba(17,24,39,.9);display:flex;
+         flex-direction:column;align-items:center;justify-content:center;
+         z-index:999;color:#fff;gap:14px}
+#loading .spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.15);
+                  border-top-color:var(--accent);border-radius:50%;
+                  animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #loading p{font-size:14px;color:#9ca3af}
 
-/* ── Config modal ─────────────────────────────────────────────────────────── */
-#cfg-modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);
-  display:flex;align-items:center;justify-content:center;z-index:1000
-}
-.cfg-box{
-  background:#fff;border-radius:14px;padding:32px 36px;
-  max-width:460px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)
-}
+/* ── Config modal ── */
+#cfg-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);
+           display:flex;align-items:center;justify-content:center;z-index:1000}
+.cfg-box{background:#fff;border-radius:14px;padding:32px 36px;
+         max-width:460px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)}
 .cfg-box h2{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px}
 .cfg-box p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
-.cfg-box label{
-  font-size:11px;font-weight:600;color:var(--text-light);
-  text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px
-}
-.cfg-box input{
-  width:100%;padding:10px 13px;border:1.5px solid var(--border);
-  border-radius:7px;font-size:13px;margin-bottom:14px;outline:none;
-  color:var(--text);transition:border-color .15s
-}
+.cfg-box label{font-size:11px;font-weight:600;color:var(--text-light);
+               text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.cfg-box input{width:100%;padding:10px 13px;border:1.5px solid var(--border);
+               border-radius:7px;font-size:13px;margin-bottom:14px;outline:none;
+               color:var(--text);transition:border-color .15s}
 .cfg-box input:focus{border-color:var(--accent)}
-.cfg-btn{
-  width:100%;padding:11px;background:var(--accent);color:#fff;
-  font-size:14px;font-weight:600;border:none;border-radius:8px;
-  cursor:pointer;transition:opacity .15s
-}
+.cfg-btn{width:100%;padding:11px;background:var(--accent);color:#fff;
+         font-size:14px;font-weight:600;border:none;border-radius:8px;
+         cursor:pointer;transition:opacity .15s}
 .cfg-btn:hover{opacity:.88}
 .cfg-err{color:var(--err);font-size:12px;margin-top:8px;display:none}
 
-/* ── Footer ─────────────────────────────────────────────────────────────── */
-#footer{
-  text-align:center;font-size:11.5px;color:#9ca3af;
-  border-top:1px solid var(--border);padding:22px 0;margin-top:36px
-}
+/* ── Footer ── */
+#footer{text-align:center;font-size:11.5px;color:#9ca3af;
+        border-top:1px solid var(--border);padding:22px 0;margin-top:36px}
 
-/* ── Responsivo ─────────────────────────────────────────────────────────── */
+/* ── Responsive ── */
+@media(max-width:1100px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:900px){
   :root{--sidebar-w:54px}
   .sb-brand .title,.sb-brand .sub,.sb-nav li a span,.sb-section,.sb-footer{display:none}
   .sb-nav li a{padding:12px;justify-content:center}
-  .sb-nav li a .nav-dot{display:none}
-  .sb-nav li a::after{content:attr(data-abbr);font-size:16px;font-weight:700;color:inherit}
+  .nav-dot{display:none}
+  .sb-nav li a::after{content:attr(data-abbr);font-size:15px;font-weight:700;color:inherit}
   #main{padding:18px 14px}
-  .col-2,.col-3-1,.col-1-1-1{grid-template-columns:1fr}
+  .col-2,.col-3-1{grid-template-columns:1fr}
 }
 @media(max-width:600px){
   .kpi-grid{grid-template-columns:1fr 1fr}
@@ -239,114 +181,167 @@ tbody tr:last-child td{border-bottom:none}
 </head>
 <body>
 
-<!-- ── Loading overlay ───────────────────────────────────────────────────── -->
 <div id="loading">
   <div class="spinner"></div>
   <p>Carregando dados...</p>
 </div>
 
-<!-- ── Modal de configuração ─────────────────────────────────────────────── -->
 <div id="cfg-modal" style="display:none">
   <div class="cfg-box">
     <h2>Configurar Supabase</h2>
     <p>Informe as credenciais do seu projeto Supabase.<br>
-       A chave <strong>anon/public</strong> é segura para uso aqui — RLS está ativo.</p>
+       A chave <strong>anon/public</strong> &eacute; segura para uso aqui &mdash; RLS est&aacute; ativo.</p>
     <label>Project URL</label>
     <input id="cfg-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co"/>
     <label>Anon Key</label>
     <input id="cfg-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."/>
     <button class="cfg-btn" onclick="saveConfig()">Conectar</button>
-    <p class="cfg-err" id="cfg-err">Nao foi possivel conectar. Verifique as credenciais.</p>
+    <p class="cfg-err" id="cfg-err">N&atilde;o foi poss&iacute;vel conectar. Verifique as credenciais.</p>
   </div>
 </div>
 
-<!-- ── Sidebar ───────────────────────────────────────────────────────────── -->
 <nav id="sidebar">
   <div class="sb-brand">
     <div class="title">BI Omnichannel</div>
     <div class="sub">Loja de Roupas &middot; 2025</div>
   </div>
-  <div class="sb-section">Paginas</div>
+  <div class="sb-section">P&aacute;ginas</div>
   <ul class="sb-nav">
     <li><a href="#" data-page="executivo"   data-abbr="E" class="active"><span class="nav-dot"></span><span>Executivo</span></a></li>
     <li><a href="#" data-page="marketing"   data-abbr="M"><span class="nav-dot"></span><span>Marketing</span></a></li>
     <li><a href="#" data-page="produtos"    data-abbr="P"><span class="nav-dot"></span><span>Produtos</span></a></li>
     <li><a href="#" data-page="clientes"    data-abbr="C"><span class="nav-dot"></span><span>Clientes</span></a></li>
-    <li><a href="#" data-page="diagnostico" data-abbr="D"><span class="nav-dot"></span><span>Diagnostico</span></a></li>
+    <li><a href="#" data-page="diagnostico" data-abbr="D"><span class="nav-dot"></span><span>Diagn&oacute;stico</span></a></li>
   </ul>
   <div class="sb-footer">
     Jan&ndash;Jun 2025<br>
-    Projeto Academico<br>
-    Dados sinteticos
+    Projeto Acad&ecirc;mico<br>
+    Dados sint&eacute;ticos
   </div>
 </nav>
 
-<!-- ── Conteudo principal ─────────────────────────────────────────────────── -->
 <main id="main">
   <header id="app-header">
     <div>
-      <h1>Inteligencia de Negocios &mdash; Loja de Roupas Omnichannel</h1>
-      <div class="sub">Analise de Conversao Digital e Custo de Aquisicao de Clientes &middot; Jan&ndash;Jun 2025</div>
+      <h1>Intelig&ecirc;ncia de Neg&oacute;cios &mdash; Loja de Roupas Omnichannel</h1>
+      <div class="sub">An&aacute;lise de Convers&atilde;o Digital e Custo de Aquisi&ccedil;&atilde;o de Clientes &middot; Jan&ndash;Jun 2025</div>
     </div>
-    <div class="badge">Dados Sinteticos &mdash; Uso Academico</div>
+    <div class="badge">Dados Sint&eacute;ticos &mdash; Uso Acad&ecirc;mico</div>
   </header>
 
-  <!-- EXECUTIVO -->
+  <!-- ── EXECUTIVO ── -->
   <section id="page-executivo" class="page active">
-    <div class="page-eyebrow">Pagina 1</div>
-    <div class="page-title">Visao Executiva</div>
+    <div class="page-eyebrow">P&aacute;gina 1</div>
+    <div class="page-title">Vis&atilde;o Executiva</div>
     <div class="page-desc">Panorama geral do desempenho do e-commerce &middot; Jan&ndash;Jun 2025</div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Per&iacute;odo</span>
+        <select class="filter-select" id="f-exec-mes" onchange="onFilter('executivo')">
+          <option value="all">Todos os meses</option>
+        </select>
+      </div>
+      <span class="filter-tag" id="f-exec-info"></span>
+      <button class="filter-reset" onclick="resetFilter('f-exec-mes','executivo')">Limpar filtro</button>
+    </div>
+
     <div class="kpi-grid" id="kpi-exec"></div>
     <div class="chart-row col-3-1">
-      <div class="chart-box"><h3>Receita Mensal &amp; Taxa de Conversao</h3><div id="ch-receita-conv" style="height:320px"></div></div>
-      <div class="chart-box"><h3>Conversao vs. Meta</h3><div id="ch-gauge" style="height:320px"></div></div>
+      <div class="chart-box"><h3>Receita Mensal &amp; Taxa de Convers&atilde;o</h3><div id="ch-receita-conv" style="height:320px"></div></div>
+      <div class="chart-box"><h3>Convers&atilde;o vs. Meta</h3><div id="ch-gauge" style="height:320px"></div></div>
     </div>
     <div class="chart-row col-1">
-      <div class="chart-box"><h3>Pedidos por Mes</h3><div id="ch-pedidos-mes" style="height:240px"></div></div>
+      <div class="chart-box"><h3>Pedidos por M&ecirc;s</h3><div id="ch-pedidos-mes" style="height:240px"></div></div>
     </div>
   </section>
 
-  <!-- MARKETING -->
+  <!-- ── MARKETING ── -->
   <section id="page-marketing" class="page">
-    <div class="page-eyebrow">Pagina 2</div>
+    <div class="page-eyebrow">P&aacute;gina 2</div>
     <div class="page-title">Marketing</div>
     <div class="page-desc">Desempenho de campanhas, CAC por canal e ROI de investimentos</div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Plataforma</span>
+        <select class="filter-select" id="f-mkt-plat" onchange="onFilter('marketing')">
+          <option value="all">Todas as plataformas</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Canal</span>
+        <select class="filter-select" id="f-mkt-canal" onchange="onFilter('marketing')">
+          <option value="all">Todos os canais</option>
+        </select>
+      </div>
+      <button class="filter-reset" onclick="resetFilters(['f-mkt-plat','f-mkt-canal'],'marketing')">Limpar filtros</button>
+    </div>
+
     <div class="kpi-grid" id="kpi-mkt"></div>
     <div class="chart-row col-2">
-      <div class="chart-box"><h3>CAC por Canal de Aquisicao</h3><div id="ch-cac-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>CAC por Canal de Aquisi&ccedil;&atilde;o</h3><div id="ch-cac-canal" style="height:300px"></div></div>
       <div class="chart-box"><h3>ROI por Campanha (top 8)</h3><div id="ch-roi-camp" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-1">
-      <div class="chart-box"><h3>Investimento em Marketing vs. Novos Clientes por Mes</h3><div id="ch-invest-mes" style="height:260px"></div></div>
+      <div class="chart-box"><h3>Investimento em Marketing vs. Novos Clientes por M&ecirc;s</h3><div id="ch-invest-mes" style="height:260px"></div></div>
     </div>
     <div class="tbl-wrap"><table id="tbl-campanhas"></table></div>
   </section>
 
-  <!-- PRODUTOS -->
+  <!-- ── PRODUTOS ── -->
   <section id="page-produtos" class="page">
-    <div class="page-eyebrow">Pagina 3</div>
+    <div class="page-eyebrow">P&aacute;gina 3</div>
     <div class="page-title">Produtos</div>
     <div class="page-desc">Mix de produtos, receita por categoria, margem e descontos</div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Categoria</span>
+        <select class="filter-select" id="f-prod-cat" onchange="onFilter('produtos')">
+          <option value="all">Todas as categorias</option>
+        </select>
+      </div>
+      <button class="filter-reset" onclick="resetFilter('f-prod-cat','produtos')">Limpar filtro</button>
+    </div>
+
     <div class="kpi-grid" id="kpi-prod"></div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Receita por Categoria (R$)</h3><div id="ch-receita-cat" style="height:300px"></div></div>
-      <div class="chart-box"><h3>Desconto Medio por Categoria (%)</h3><div id="ch-desconto-cat" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Desconto M&eacute;dio por Categoria (%)</h3><div id="ch-desconto-cat" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Margem Bruta por Categoria (%)</h3><div id="ch-margem-cat" style="height:280px"></div></div>
-      <div class="chart-box"><h3>Ticket Medio vs. Volume de Pedidos</h3><div id="ch-scatter-prod" style="height:280px"></div></div>
+      <div class="chart-box"><h3>Ticket M&eacute;dio vs. Volume de Pedidos</h3><div id="ch-scatter-prod" style="height:280px"></div></div>
     </div>
   </section>
 
-  <!-- CLIENTES -->
+  <!-- ── CLIENTES ── -->
   <section id="page-clientes" class="page">
-    <div class="page-eyebrow">Pagina 4</div>
+    <div class="page-eyebrow">P&aacute;gina 4</div>
     <div class="page-title">Clientes</div>
-    <div class="page-desc">Perfil, distribuicao geografica e comportamento da base de clientes</div>
+    <div class="page-desc">Perfil, distribui&ccedil;&atilde;o geogr&aacute;fica e comportamento da base de clientes</div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Canal de Aquisi&ccedil;&atilde;o</span>
+        <select class="filter-select" id="f-cli-canal" onchange="onFilter('clientes')">
+          <option value="all">Todos os canais</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Faixa de Renda</span>
+        <select class="filter-select" id="f-cli-renda" onchange="onFilter('clientes')">
+          <option value="all">Todas as faixas</option>
+        </select>
+      </div>
+      <button class="filter-reset" onclick="resetFilters(['f-cli-canal','f-cli-renda'],'clientes')">Limpar filtros</button>
+    </div>
+
     <div class="kpi-grid" id="kpi-cli"></div>
     <div class="chart-row col-2">
-      <div class="chart-box"><h3>Clientes por Canal de Aquisicao</h3><div id="ch-cli-canal" style="height:300px"></div></div>
-      <div class="chart-box"><h3>Distribuicao por Faixa de Renda</h3><div id="ch-renda" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Clientes por Canal de Aquisi&ccedil;&atilde;o</h3><div id="ch-cli-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Distribui&ccedil;&atilde;o por Faixa de Renda</h3><div id="ch-renda" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Top 12 Estados</h3><div id="ch-cli-uf" style="height:280px"></div></div>
@@ -354,18 +349,35 @@ tbody tr:last-child td{border-bottom:none}
     </div>
   </section>
 
-  <!-- DIAGNOSTICO -->
+  <!-- ── DIAGN&Oacute;STICO ── -->
   <section id="page-diagnostico" class="page">
-    <div class="page-eyebrow">Pagina 5</div>
-    <div class="page-title">Diagnostico</div>
-    <div class="page-desc">Investigacao das causas da baixa conversao e CAC elevado</div>
+    <div class="page-eyebrow">P&aacute;gina 5</div>
+    <div class="page-title">Diagn&oacute;stico</div>
+    <div class="page-desc">Investiga&ccedil;&atilde;o das causas da baixa convers&atilde;o e CAC elevado</div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Dispositivo</span>
+        <select class="filter-select" id="f-diag-disp" onchange="onFilter('diagnostico')">
+          <option value="all">Todos os dispositivos</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Canal de Origem</span>
+        <select class="filter-select" id="f-diag-canal" onchange="onFilter('diagnostico')">
+          <option value="all">Todos os canais</option>
+        </select>
+      </div>
+      <button class="filter-reset" onclick="resetFilters(['f-diag-disp','f-diag-canal'],'diagnostico')">Limpar filtros</button>
+    </div>
+
     <div class="kpi-grid" id="kpi-diag"></div>
     <div class="chart-row col-1">
-      <div class="chart-box"><h3>Funil de Conversao &mdash; Jornada Completa do Cliente</h3><div id="ch-funil" style="height:360px"></div></div>
+      <div class="chart-box"><h3>Funil de Convers&atilde;o &mdash; Jornada Completa do Cliente</h3><div id="ch-funil" style="height:360px"></div></div>
     </div>
     <div class="chart-row col-2">
-      <div class="chart-box"><h3>Conversao por Dispositivo</h3><div id="ch-conv-disp" style="height:300px"></div></div>
-      <div class="chart-box"><h3>Conversao por Canal de Origem</h3><div id="ch-conv-canal" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Convers&atilde;o por Dispositivo</h3><div id="ch-conv-disp" style="height:300px"></div></div>
+      <div class="chart-box"><h3>Convers&atilde;o por Canal de Origem</h3><div id="ch-conv-canal" style="height:300px"></div></div>
     </div>
     <div class="chart-row col-2">
       <div class="chart-box"><h3>Funil por Dispositivo (volume)</h3><div id="ch-funil-disp" style="height:280px"></div></div>
@@ -375,20 +387,16 @@ tbody tr:last-child td{border-bottom:none}
   </section>
 
   <footer id="footer">
-    Projeto Academico de Business Intelligence &mdash;
-    Dados Sinteticos &mdash; Uso Exclusivamente Educacional
+    Projeto Acad&ecirc;mico de Business Intelligence &mdash;
+    Dados Sint&eacute;ticos &mdash; Uso Exclusivamente Educacional
   </footer>
 </main>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════════
-// CONFIGURAÇÃO — altere as duas linhas abaixo com as credenciais Supabase
-// Se deixar vazio, um modal pedirá as credenciais no primeiro acesso.
-// ═══════════════════════════════════════════════════════════════════════════
-const HARD_URL = "";   // ex: "https://xxxx.supabase.co"
-const HARD_KEY = "";   // ex: "eyJhbGci..."
+const HARD_URL = "";
+const HARD_KEY = "";
 
-// ── Paleta ──────────────────────────────────────────────────────────────────
+// Paleta de cores
 const C = ["#4f6ef7","#f59e0b","#059669","#dc2626","#8b5cf6","#06b6d4","#f97316","#374151"];
 const LAYOUT = {
   paper_bgcolor:"#fff", plot_bgcolor:"#fff",
@@ -398,47 +406,38 @@ const LAYOUT = {
 };
 const CFG = {responsive:true,displayModeBar:false};
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const brl  = v => "R$ " + (+v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
-const num  = v => (+v).toLocaleString("pt-BR");
-const pct  = v => (+v).toFixed(2) + "%";
-const roi  = v => (+v).toFixed(2) + "×";
+// Helpers
+const brl = v => "R$ "+Number(v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = v => Number(v).toLocaleString("pt-BR");
+const pct = v => Number(v).toFixed(2)+"%";
+const roi = v => Number(v).toFixed(2)+"×";
+const fsel = id => document.getElementById(id)?.value || "all";
 
 function kpiCard(label,value,sub,cls=""){
-  return `<div class="kpi ${cls}">
-    <div class="kpi-lbl">${label}</div>
-    <div class="kpi-val">${value}</div>
-    <div class="kpi-sub">${sub}</div>
-  </div>`;
+  return `<div class="kpi ${cls}"><div class="kpi-lbl">${label}</div><div class="kpi-val">${value}</div><div class="kpi-sub">${sub}</div></div>`;
 }
 function setKpi(id,html){document.getElementById(id).innerHTML=html}
 
 function tableHTML(cols,rows){
-  const head = `<thead><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead>`;
-  const body = `<tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>`;
-  return head+body;
+  return `<thead><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead>`
+       + `<tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>`;
 }
 
-// ── Supabase init ─────────────────────────────────────────────────────────────
-let sb;
-async function query(table){
-  const {data,error} = await sb.from(table).select("*");
-  if(error) throw error;
-  return data;
-}
+// Supabase
+let sb, globalD;
+async function query(t){const{data,error}=await sb.from(t).select("*");if(error)throw error;return data}
 
-// ── Config modal ──────────────────────────────────────────────────────────────
+// Config
 function saveConfig(){
-  const url = document.getElementById("cfg-url").value.trim();
-  const key = document.getElementById("cfg-key").value.trim();
-  if(!url||!key){document.getElementById("cfg-err").style.display="block";return;}
-  sessionStorage.setItem("sb_url",url);
-  sessionStorage.setItem("sb_key",key);
+  const url=document.getElementById("cfg-url").value.trim();
+  const key=document.getElementById("cfg-key").value.trim();
+  if(!url||!key){document.getElementById("cfg-err").style.display="block";return}
+  sessionStorage.setItem("sb_url",url);sessionStorage.setItem("sb_key",key);
   document.getElementById("cfg-modal").style.display="none";
   initApp(url,key);
 }
 
-// ── Navegação ─────────────────────────────────────────────────────────────────
+// Nav
 document.querySelectorAll(".sb-nav a").forEach(a=>{
   a.addEventListener("click",e=>{
     e.preventDefault();
@@ -449,46 +448,104 @@ document.querySelectorAll(".sb-nav a").forEach(a=>{
   });
 });
 
+// ── Filtros ──────────────────────────────────────────────────────────────────
+function populateSelect(id, values, labelFn){
+  const s = document.getElementById(id);
+  const first = s.options[0];
+  s.innerHTML=""; s.appendChild(first);
+  values.forEach(v=>{
+    const o=document.createElement("option");
+    o.value=v; o.textContent=labelFn?labelFn(v):v;
+    s.appendChild(o);
+  });
+}
+
+function populateFilters(D){
+  // Executivo — meses
+  const meses=[...new Set(D.mensal.map(r=>r.mes))].sort((a,b)=>{
+    const order=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+    return order.indexOf(a)-order.indexOf(b);
+  });
+  populateSelect("f-exec-mes", meses);
+
+  // Marketing — plataformas e canais
+  populateSelect("f-mkt-plat",[...new Set(D.campanhas.map(r=>r.plataforma))].sort());
+  populateSelect("f-mkt-canal",[...new Set(D.cac_canal.map(r=>r.canal))].sort());
+
+  // Produtos — categorias
+  populateSelect("f-prod-cat", D.categorias.map(r=>r.categoria).sort());
+
+  // Clientes — canais e rendas
+  populateSelect("f-cli-canal",[...new Set(D.cli_canal.map(r=>r.canal))].sort());
+  populateSelect("f-cli-renda", D.renda.map(r=>r.faixa));
+
+  // Diagnóstico — dispositivos e canais
+  populateSelect("f-diag-disp",[...new Set(D.funil.map(r=>r.dispositivo))].sort());
+  populateSelect("f-diag-canal",[...new Set(D.conv_canal.map(r=>r.canal))].sort());
+}
+
+function onFilter(page){
+  if(!globalD) return;
+  switch(page){
+    case "executivo":   renderExecutivo(globalD); break;
+    case "marketing":   renderMarketing(globalD); break;
+    case "produtos":    renderProdutos(globalD); break;
+    case "clientes":    renderClientes(globalD); break;
+    case "diagnostico": renderDiagnostico(globalD); break;
+  }
+}
+
+function resetFilter(id, page){
+  document.getElementById(id).value="all";
+  onFilter(page);
+}
+function resetFilters(ids, page){
+  ids.forEach(id=>document.getElementById(id).value="all");
+  onFilter(page);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // RENDER — Executivo
 // ═══════════════════════════════════════════════════════════════════════════
 function renderExecutivo(D){
-  const k = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
-  const m = [...D.mensal].sort((a,b)=>a.mes_num-b.mes_num);
+  const k   = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
+  const mes = fsel("f-exec-mes");
+  const m   = D.mensal
+    .filter(r=> mes==="all" || r.mes===mes)
+    .sort((a,b)=>a.mes_num-b.mes_num);
 
-  const conv     = +k.taxa_conversao.valor;
-  const metaConv = +k.taxa_conversao.meta;
-  const cac      = +k.cac.valor;
-  const metaCac  = +k.cac.meta;
+  const conv=+k.taxa_conversao.valor, metaConv=+k.taxa_conversao.meta;
+  const cac=+k.cac.valor, metaCac=+k.cac.meta;
 
+  // KPIs: sempre dados globais (kpis_resumo é agregado)
   setKpi("kpi-exec",
-    kpiCard("Receita Total",         brl(k.receita_total.valor),         "Jan–Jun 2025") +
-    kpiCard("Pedidos Válidos",        num(k.pedidos.valor),               "Pedidos processados") +
-    kpiCard("Sessões no Site",        num(k.sessoes.valor),               "Visitas ao e-commerce") +
-    kpiCard("Invest. Marketing",      brl(k.investimento_marketing.valor),"Total acumulado") +
-    kpiCard("Taxa de Conversão",      pct(conv),
-      `Meta: ${pct(metaConv)} | Gap: ${(conv-metaConv).toFixed(2)} p.p.`,"err") +
-    kpiCard("CAC",                    brl(cac),
-      `Meta: ${brl(metaCac)} | Gap: ${brl(cac-metaCac)}`,"err") +
-    kpiCard("Ticket Médio",           brl(k.ticket_medio.valor),          "2,3× o CAC atual","ok") +
-    kpiCard("ROI de Marketing",       roi(k.roi_marketing.valor),         "R$ 4,69 por R$ 1,00 invest.","ok")
+    kpiCard("Receita Total",    brl(k.receita_total.valor),          "Jan–Jun 2025")+
+    kpiCard("Pedidos Válidos",  num(k.pedidos.valor),                "Pedidos processados")+
+    kpiCard("Sessões no Site",  num(k.sessoes.valor),                "Visitas ao e-commerce")+
+    kpiCard("Invest. Marketing",brl(k.investimento_marketing.valor), "Total acumulado")+
+    kpiCard("Taxa de Conversão",pct(conv),
+      `Meta: ${pct(metaConv)} | Gap: ${(conv-metaConv).toFixed(2)} p.p.`,"err")+
+    kpiCard("CAC",              brl(cac),
+      `Meta: ${brl(metaCac)} | Gap: ${brl(cac-metaCac)}`,"err")+
+    kpiCard("Ticket Médio",     brl(k.ticket_medio.valor),           "2,3× o CAC atual","ok")+
+    kpiCard("ROI de Marketing", roi(k.roi_marketing.valor),          "R$ 4,69 por R$ 1,00","ok")
   );
 
-  // Receita + Conversão
-  Plotly.newPlot("ch-receita-conv",[
-    {type:"bar",  name:"Receita (R$)",   x:m.map(r=>r.mes), y:m.map(r=>r.receita),
-     marker:{color:C[0],opacity:.85}, yaxis:"y"},
-    {type:"scatter",name:"Conversão (%)",x:m.map(r=>r.mes), y:m.map(r=>r.taxa_conversao),
+  // Receita + Conversão (filtrado por mês)
+  Plotly.react("ch-receita-conv",[
+    {type:"bar",name:"Receita (R$)",x:m.map(r=>r.mes),y:m.map(r=>r.receita),
+     marker:{color:C[0],opacity:.85},yaxis:"y"},
+    {type:"scatter",name:"Conversão (%)",x:m.map(r=>r.mes),y:m.map(r=>r.taxa_conversao),
      mode:"lines+markers",line:{color:C[1],width:3},marker:{size:7},yaxis:"y2"},
-    {type:"scatter",name:"Meta 3,06%",   x:m.map(r=>r.mes), y:m.map(()=>3.06),
-     mode:"lines",line:{color:"#dc2626",dash:"dash",width:2},yaxis:"y2",showlegend:true},
+    {type:"scatter",name:"Meta 3,06%",x:m.map(r=>r.mes),y:m.map(()=>3.06),
+     mode:"lines",line:{color:"#dc2626",dash:"dash",width:2},yaxis:"y2"},
   ],{...LAYOUT,
     yaxis:{title:"Receita (R$)",tickprefix:"R$ ",separatethousands:true},
     yaxis2:{title:"Conversão (%)",overlaying:"y",side:"right",ticksuffix:"%",showgrid:false},
   },CFG);
 
-  // Gauge
-  Plotly.newPlot("ch-gauge",[{
+  // Gauge — usa dado global
+  Plotly.react("ch-gauge",[{
     type:"indicator",mode:"gauge+number+delta",value:conv,
     delta:{reference:metaConv,valueformat:".2f",suffix:" p.p.",
            increasing:{color:"#059669"},decreasing:{color:"#dc2626"}},
@@ -499,11 +556,10 @@ function renderExecutivo(D){
       threshold:{line:{color:"#059669",width:3},thickness:.85,value:metaConv}},
   }],{paper_bgcolor:"#fff",margin:{t:80,b:20,l:20,r:20},font:LAYOUT.font},CFG);
 
-  // Pedidos por mês
-  Plotly.newPlot("ch-pedidos-mes",[{
+  // Pedidos por mês (filtrado)
+  Plotly.react("ch-pedidos-mes",[{
     type:"bar",x:m.map(r=>r.mes),y:m.map(r=>r.pedidos),
     marker:{color:C[0]},text:m.map(r=>num(r.pedidos)),textposition:"outside",
-    name:"Pedidos",
   }],{...LAYOUT,yaxis:{title:"Pedidos"}},CFG);
 }
 
@@ -512,45 +568,48 @@ function renderExecutivo(D){
 // ═══════════════════════════════════════════════════════════════════════════
 function renderMarketing(D){
   const k    = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
-  const cc   = [...D.cac_canal].filter(r=>r.cac>0).sort((a,b)=>a.cac-b.cac);
-  const camp = [...D.campanhas].sort((a,b)=>b.roi-a.roi).slice(0,8);
+  const plat = fsel("f-mkt-plat");
+  const canal= fsel("f-mkt-canal");
   const m    = [...D.mensal].sort((a,b)=>a.mes_num-b.mes_num);
 
+  // Filtra campanhas por plataforma
+  const campanhasFil = D.campanhas.filter(r=>
+    (plat==="all" || r.plataforma===plat)
+  );
+  // Filtra CAC por canal
+  const cacFil = D.cac_canal.filter(r=>
+    (canal==="all" || r.canal===canal) && r.cac>0
+  ).sort((a,b)=>a.cac-b.cac);
+
+  const camp = [...campanhasFil].sort((a,b)=>b.roi-a.roi).slice(0,8);
+
   setKpi("kpi-mkt",
-    kpiCard("Invest. Total",   brl(k.investimento_marketing.valor),"Todas as plataformas") +
-    kpiCard("ROI Consolidado", roi(k.roi_marketing.valor),         "R$ 4,69 por R$ 1 invest.","ok") +
-    kpiCard("CAC Médio",       brl(k.cac.valor),
-      `Meta: ${brl(k.cac.meta)}`,"err") +
+    kpiCard("Invest. Total",   brl(k.investimento_marketing.valor),"Todas as plataformas")+
+    kpiCard("ROI Consolidado", roi(k.roi_marketing.valor),         "R$ 4,69 por R$ 1","ok")+
+    kpiCard("CAC Médio",       brl(k.cac.valor),`Meta: ${brl(k.cac.meta)}`,"err")+
     kpiCard("Novos Clientes",  num(k.novos_clientes.valor),        "No período")
   );
 
-  // CAC por canal
-  const cacCores = cc.map(r=>+r.cac<=113.46?"#059669":"#dc2626");
-  Plotly.newPlot("ch-cac-canal",[{
-    type:"bar",orientation:"h",
-    x:cc.map(r=>r.cac), y:cc.map(r=>r.canal),
-    marker:{color:cacCores},
-    text:cc.map(r=>"R$ "+Math.round(r.cac)),
-    textposition:"outside",name:"CAC",
+  const cacCores = cacFil.map(r=>+r.cac<=113.46?"#059669":"#dc2626");
+  Plotly.react("ch-cac-canal",[{
+    type:"bar",orientation:"h",x:cacFil.map(r=>r.cac),y:cacFil.map(r=>r.canal),
+    marker:{color:cacCores},text:cacFil.map(r=>"R$ "+Math.round(r.cac)),
+    textposition:"outside",
   }],{...LAYOUT,
-    shapes:[{type:"line",x0:113.46,x1:113.46,y0:-0.5,y1:cc.length-.5,
+    shapes:[{type:"line",x0:113.46,x1:113.46,y0:-0.5,y1:Math.max(cacFil.length-.5,0),
              line:{color:"#374151",dash:"dash",width:2}}],
-    annotations:[{x:113.46,y:cc.length,text:"Meta R$113",
+    annotations:[{x:113.46,y:cacFil.length,text:"Meta R$113",
                   showarrow:false,font:{color:"#374151",size:11}}],
     xaxis:{title:"CAC (R$)"},
   },CFG);
 
-  // ROI por campanha
-  Plotly.newPlot("ch-roi-camp",[{
+  Plotly.react("ch-roi-camp",[{
     type:"bar",orientation:"h",
-    x:camp.map(r=>r.roi), y:camp.map(r=>r.campanha),
-    marker:{color:C[0]},
-    text:camp.map(r=>r.roi.toFixed(1)+"×"),
-    textposition:"outside",name:"ROI",
+    x:camp.map(r=>r.roi),y:camp.map(r=>r.campanha),
+    marker:{color:C[0]},text:camp.map(r=>r.roi.toFixed(1)+"×"),textposition:"outside",
   }],{...LAYOUT,xaxis:{title:"ROI (×)"}},CFG);
 
-  // Investimento vs Novos Clientes
-  Plotly.newPlot("ch-invest-mes",[
+  Plotly.react("ch-invest-mes",[
     {type:"bar",name:"Invest. Marketing (R$)",
      x:m.map(r=>r.mes),y:m.map(r=>r.investimento_marketing),
      marker:{color:C[0],opacity:.8},yaxis:"y"},
@@ -562,117 +621,100 @@ function renderMarketing(D){
     yaxis2:{title:"Novos Clientes",overlaying:"y",side:"right",showgrid:false},
   },CFG);
 
-  // Tabela campanhas
-  const cols = ["Campanha","Plataforma","Investimento","Receita Atrib.","Novos Clientes","CAC","ROI"];
-  const rows = [...D.campanhas].sort((a,b)=>b.roi-a.roi).map(r=>[
-    r.campanha, r.plataforma,
-    brl(r.investimento), brl(r.receita_atribuida),
-    num(r.novos_clientes), brl(r.cac), roi(r.roi),
+  const cols=["Campanha","Plataforma","Investimento","Receita Atrib.","Novos Clientes","CAC","ROI"];
+  const rows=[...campanhasFil].sort((a,b)=>b.roi-a.roi).map(r=>[
+    r.campanha,r.plataforma,brl(r.investimento),brl(r.receita_atribuida),
+    num(r.novos_clientes),brl(r.cac),roi(r.roi),
   ]);
-  document.getElementById("tbl-campanhas").innerHTML = tableHTML(cols,rows);
+  document.getElementById("tbl-campanhas").innerHTML=tableHTML(cols,rows);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // RENDER — Produtos
 // ═══════════════════════════════════════════════════════════════════════════
 function renderProdutos(D){
-  const k    = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
-  const cats = [...D.categorias].sort((a,b)=>b.receita-a.receita);
+  const k   = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
+  const cat = fsel("f-prod-cat");
+  const cats= D.categorias
+    .filter(r=> cat==="all" || r.categoria===cat)
+    .sort((a,b)=>b.receita-a.receita);
 
   setKpi("kpi-prod",
-    kpiCard("Receita Total",  brl(k.receita_total.valor), "Jan–Jun 2025") +
-    kpiCard("Itens Vendidos", "13.279",                   "Linhas de pedido") +
-    kpiCard("Ticket Médio",   brl(k.ticket_medio.valor),  "Valor médio por pedido","ok") +
-    kpiCard("SKUs Ativos",    "96",                       "Produtos no catálogo")
+    kpiCard("Receita Total", brl(k.receita_total.valor),"Jan–Jun 2025")+
+    kpiCard("Itens Vendidos","13.279",                  "Linhas de pedido")+
+    kpiCard("Ticket Médio",  brl(k.ticket_medio.valor), "Valor médio por pedido","ok")+
+    kpiCard("SKUs Ativos",   "96",                      "Produtos no catálogo")
   );
 
-  // Receita por categoria
-  Plotly.newPlot("ch-receita-cat",[{
-    type:"bar",orientation:"h",
-    x:cats.map(r=>r.receita), y:cats.map(r=>r.categoria),
-    marker:{color:C[0]},
-    text:cats.map(r=>"R$ "+Math.round(r.receita/1000)+"k"),
-    textposition:"outside",name:"Receita",
+  Plotly.react("ch-receita-cat",[{
+    type:"bar",orientation:"h",x:cats.map(r=>r.receita),y:cats.map(r=>r.categoria),
+    marker:{color:C[0]},text:cats.map(r=>"R$ "+Math.round(r.receita/1000)+"k"),
+    textposition:"outside",
   }],{...LAYOUT,xaxis:{title:"Receita (R$)"}},CFG);
 
-  // Desconto médio
-  const dsc = [...cats].sort((a,b)=>b.desconto_medio_pct-a.desconto_medio_pct);
-  Plotly.newPlot("ch-desconto-cat",[{
-    type:"bar",
-    x:dsc.map(r=>r.categoria), y:dsc.map(r=>r.desconto_medio_pct),
+  const dsc=[...cats].sort((a,b)=>b.desconto_medio_pct-a.desconto_medio_pct);
+  Plotly.react("ch-desconto-cat",[{
+    type:"bar",x:dsc.map(r=>r.categoria),y:dsc.map(r=>r.desconto_medio_pct),
     marker:{color:dsc.map(r=>r.desconto_medio_pct>12?"#dc2626":"#f59e0b")},
-    text:dsc.map(r=>r.desconto_medio_pct.toFixed(1)+"%"),
-    textposition:"outside",name:"Desconto",
+    text:dsc.map(r=>r.desconto_medio_pct.toFixed(1)+"%"),textposition:"outside",
   }],{...LAYOUT,yaxis:{title:"Desconto (%)"}},CFG);
 
-  // Margem
-  Plotly.newPlot("ch-margem-cat",[{
-    type:"bar",
-    x:cats.map(r=>r.categoria), y:cats.map(r=>r.margem_pct),
-    marker:{color:"#059669"},
-    text:cats.map(r=>r.margem_pct.toFixed(1)+"%"),
-    textposition:"outside",name:"Margem",
+  Plotly.react("ch-margem-cat",[{
+    type:"bar",x:cats.map(r=>r.categoria),y:cats.map(r=>r.margem_pct),
+    marker:{color:"#059669"},text:cats.map(r=>r.margem_pct.toFixed(1)+"%"),
+    textposition:"outside",
   }],{...LAYOUT,yaxis:{title:"Margem (%)"}},CFG);
 
-  // Scatter
-  Plotly.newPlot("ch-scatter-prod",[{
+  Plotly.react("ch-scatter-prod",[{
     type:"scatter",mode:"markers+text",
-    x:cats.map(r=>r.ticket_medio), y:cats.map(r=>r.pedidos),
-    text:cats.map(r=>r.categoria),
-    textposition:"top center",
-    marker:{size:cats.map(r=>Math.sqrt(r.receita)/20),
-            color:C,opacity:.8},
-    name:"",
-  }],{...LAYOUT,
-    xaxis:{title:"Ticket Médio (R$)"},
-    yaxis:{title:"Pedidos"},
-  },CFG);
+    x:cats.map(r=>r.ticket_medio),y:cats.map(r=>r.pedidos),
+    text:cats.map(r=>r.categoria),textposition:"top center",
+    marker:{size:cats.map(r=>Math.sqrt(r.receita)/20),color:C,opacity:.8},
+  }],{...LAYOUT,xaxis:{title:"Ticket Médio (R$)"},yaxis:{title:"Pedidos"}},CFG);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // RENDER — Clientes
 // ═══════════════════════════════════════════════════════════════════════════
 function renderClientes(D){
-  const k   = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
-  const cc  = [...D.cli_canal].sort((a,b)=>b.total_clientes-a.total_clientes);
-  const uf  = [...D.cli_uf].sort((a,b)=>b.total_clientes-a.total_clientes).slice(0,12);
-  const rnd = D.renda;
-  const ativ = (+k.novos_clientes.valor / +k.clientes_cadastrados.valor * 100).toFixed(1);
+  const k      = Object.fromEntries(D.kpis.map(r=>[r.indicador,r]));
+  const canal  = fsel("f-cli-canal");
+  const renda  = fsel("f-cli-renda");
 
+  const cc  = D.cli_canal
+    .filter(r=> canal==="all" || r.canal===canal)
+    .sort((a,b)=>b.total_clientes-a.total_clientes);
+  const uf  = [...D.cli_uf].sort((a,b)=>b.total_clientes-a.total_clientes).slice(0,12);
+  const rnd = D.renda.filter(r=> renda==="all" || r.faixa===renda);
+
+  const ativ=(+k.novos_clientes.valor/+k.clientes_cadastrados.valor*100).toFixed(1);
   setKpi("kpi-cli",
-    kpiCard("Clientes Cadastrados", num(k.clientes_cadastrados.valor), "Base total CRM") +
-    kpiCard("Clientes Compradores", num(k.novos_clientes.valor),       "Com ao menos 1 pedido") +
-    kpiCard("Taxa de Ativação",     ativ+"%",      "Cadastrados que compraram","ok") +
-    kpiCard("Clientes s/ E-mail",   "~8%",         "Qualidade cadastral","err")
+    kpiCard("Clientes Cadastrados",num(k.clientes_cadastrados.valor),"Base total CRM")+
+    kpiCard("Clientes Compradores",num(k.novos_clientes.valor),      "Com ao menos 1 pedido")+
+    kpiCard("Taxa de Ativação",    ativ+"%","Cadastrados que compraram","ok")+
+    kpiCard("Clientes s/ E-mail",  "~8%",  "Qualidade cadastral","err")
   );
 
-  // Clientes por canal
-  Plotly.newPlot("ch-cli-canal",[{
+  Plotly.react("ch-cli-canal",[{
     type:"bar",x:cc.map(r=>r.canal),y:cc.map(r=>r.total_clientes),
-    marker:{color:C[0]},text:cc.map(r=>r.total_clientes),
-    textposition:"outside",name:"Clientes",
+    marker:{color:C[0]},text:cc.map(r=>r.total_clientes),textposition:"outside",
   }],{...LAYOUT,yaxis:{title:"Clientes"}},CFG);
 
-  // Renda (donut)
-  Plotly.newPlot("ch-renda",[{
+  Plotly.react("ch-renda",[{
     type:"pie",labels:rnd.map(r=>r.faixa),values:rnd.map(r=>r.total_clientes),
     hole:.42,marker:{colors:C},textinfo:"percent+label",
   }],{paper_bgcolor:"#fff",margin:{t:20,b:20,l:20,r:20},showlegend:false},CFG);
 
-  // UF
-  Plotly.newPlot("ch-cli-uf",[{
+  Plotly.react("ch-cli-uf",[{
     type:"bar",x:uf.map(r=>r.uf),y:uf.map(r=>r.total_clientes),
-    marker:{color:C[0]},text:uf.map(r=>r.total_clientes),
-    textposition:"outside",name:"Clientes",
+    marker:{color:C[0]},text:uf.map(r=>r.total_clientes),textposition:"outside",
   }],{...LAYOUT,xaxis:{title:"UF"},yaxis:{title:"Clientes"}},CFG);
 
-  // Score fidelidade
-  const fid = [...cc].sort((a,b)=>b.score_fidelidade_medio-a.score_fidelidade_medio);
-  Plotly.newPlot("ch-fidelidade",[{
+  const fid=[...cc].sort((a,b)=>b.score_fidelidade_medio-a.score_fidelidade_medio);
+  Plotly.react("ch-fidelidade",[{
     type:"bar",x:fid.map(r=>r.canal),y:fid.map(r=>r.score_fidelidade_medio),
     marker:{color:fid.map(r=>r.score_fidelidade_medio>=60?"#059669":"#f59e0b")},
-    text:fid.map(r=>r.score_fidelidade_medio.toFixed(0)),
-    textposition:"outside",name:"Score",
+    text:fid.map(r=>r.score_fidelidade_medio.toFixed(0)),textposition:"outside",
   }],{...LAYOUT,yaxis:{title:"Score (0–100)",range:[0,90]}},CFG);
 }
 
@@ -680,48 +722,52 @@ function renderClientes(D){
 // RENDER — Diagnóstico
 // ═══════════════════════════════════════════════════════════════════════════
 function renderDiagnostico(D){
-  const funil  = D.funil;
-  const atend  = [...D.atendimento].sort((a,b)=>b.quantidade-a.quantidade);
-  const cc     = [...D.conv_canal].sort((a,b)=>b.taxa_conversao-a.taxa_conversao);
+  const disp  = fsel("f-diag-disp");
+  const canal = fsel("f-diag-canal");
 
-  const mob  = funil.find(r=>r.dispositivo==="Mobile");
-  const desk = funil.find(r=>r.dispositivo==="Desktop");
-  const convM = (mob.pedidos/mob.sessoes*100).toFixed(2);
-  const convD = (desk.pedidos/desk.sessoes*100).toFixed(2);
+  const funil  = D.funil.filter(r=> disp==="all"  || r.dispositivo===disp);
+  const atend  = [...D.atendimento].sort((a,b)=>b.quantidade-a.quantidade);
+  const cc     = D.conv_canal
+    .filter(r=> canal==="all" || r.canal===canal)
+    .sort((a,b)=>b.taxa_conversao-a.taxa_conversao);
+
+  // KPIs — usa dados globais
+  const mob  = D.funil.find(r=>r.dispositivo==="Mobile");
+  const desk = D.funil.find(r=>r.dispositivo==="Desktop");
+  const convM=(mob.pedidos/mob.sessoes*100).toFixed(2);
+  const convD=(desk.pedidos/desk.sessoes*100).toFixed(2);
 
   setKpi("kpi-diag",
-    kpiCard("Conversão Mobile",      convM+"%",       "Maior volume, menor eficiência","err") +
-    kpiCard("Conversão Desktop",     convD+"%",       "Menor volume, maior eficiência","ok") +
-    kpiCard("Tickets de Suporte",    "900",           "Registros no período") +
-    kpiCard("Principal Motivo Suporte","Troca Tamanho","31,7% dos atendimentos","err")
+    kpiCard("Conversão Mobile",  convM+"%","Maior volume, menor eficiência","err")+
+    kpiCard("Conversão Desktop", convD+"%","Menor volume, maior eficiência","ok")+
+    kpiCard("Tickets de Suporte","900",    "Registros no período")+
+    kpiCard("Principal Motivo",  "Troca Tamanho","31,7% dos atendimentos","err")
   );
 
-  // Funil completo
-  const totals = funil.reduce((acc,r)=>{
-    acc.sessoes   += r.sessoes;
-    acc.add_to_cart+=r.add_to_cart;
-    acc.checkout  += r.checkout;
-    acc.pedidos   += r.pedidos;
-    return acc;
-  },{sessoes:0,add_to_cart:0,checkout:0,pedidos:0});
+  // Funil (filtrado por dispositivo)
+  const totals=funil.reduce((a,r)=>({
+    sessoes:a.sessoes+r.sessoes, add_to_cart:a.add_to_cart+r.add_to_cart,
+    checkout:a.checkout+r.checkout, pedidos:a.pedidos+r.pedidos,
+  }),{sessoes:0,add_to_cart:0,checkout:0,pedidos:0});
 
-  Plotly.newPlot("ch-funil",[{
+  Plotly.react("ch-funil",[{
     type:"funnel",
     y:["Sessões","Add to Cart","Checkout","Pedidos"],
     x:[totals.sessoes,totals.add_to_cart,totals.checkout,totals.pedidos],
     textinfo:"value+percent initial",
     marker:{color:["#4f6ef7","#f59e0b","#dc2626","#059669"]},
     connector:{line:{color:"#e5e7eb",width:2}},
-  }],{paper_bgcolor:"#fff",margin:{t:20,b:30,l:140,r:80}},CFG);
+  }],{paper_bgcolor:"#fff",margin:{t:20,b:30,l:140,r:80},font:LAYOUT.font},CFG);
 
-  // Conversão por dispositivo
-  const dispConv = funil.map(r=>({d:r.dispositivo,cv:r.pedidos/r.sessoes*100}));
-  Plotly.newPlot("ch-conv-disp",[{
-    type:"bar",
-    x:dispConv.map(r=>r.d), y:dispConv.map(r=>r.cv),
-    marker:{color:dispConv.map(r=>r.cv<2.66?"#dc2626":"#059669")},
-    text:dispConv.map(r=>r.cv.toFixed(2)+"%"),
-    textposition:"outside",name:"Conversão",
+  // Conversão por dispositivo (filtro destaca selecionado)
+  const allDisp=D.funil.map(r=>({d:r.dispositivo,cv:r.pedidos/r.sessoes*100}));
+  Plotly.react("ch-conv-disp",[{
+    type:"bar",x:allDisp.map(r=>r.d),y:allDisp.map(r=>r.cv),
+    marker:{color:allDisp.map(r=>{
+      if(disp!=="all" && r.d!==disp) return "#e5e7eb";
+      return r.cv<2.66?"#dc2626":"#059669";
+    })},
+    text:allDisp.map(r=>r.cv.toFixed(2)+"%"),textposition:"outside",
   }],{...LAYOUT,
     yaxis:{title:"Conversão (%)",range:[0,5]},
     shapes:[{type:"line",x0:-0.5,x1:2.5,y0:2.66,y1:2.66,
@@ -730,94 +776,79 @@ function renderDiagnostico(D){
                   font:{size:11,color:"#374151"},xanchor:"right"}],
   },CFG);
 
-  // Conversão por canal
-  Plotly.newPlot("ch-conv-canal",[{
+  // Conversão por canal (filtrado)
+  Plotly.react("ch-conv-canal",[{
     type:"bar",orientation:"h",
-    x:cc.map(r=>r.taxa_conversao), y:cc.map(r=>r.canal),
+    x:cc.map(r=>r.taxa_conversao),y:cc.map(r=>r.canal),
     marker:{color:cc.map(r=>r.taxa_conversao>=2.66?"#059669":"#dc2626")},
-    text:cc.map(r=>r.taxa_conversao.toFixed(2)+"%"),
-    textposition:"outside",name:"Conversão",
+    text:cc.map(r=>r.taxa_conversao.toFixed(2)+"%"),textposition:"outside",
   }],{...LAYOUT,
     xaxis:{title:"Conversão (%)"},
-    shapes:[{type:"line",x0:2.66,x1:2.66,y0:-0.5,y1:cc.length-.5,
+    shapes:[{type:"line",x0:2.66,x1:2.66,y0:-0.5,y1:Math.max(cc.length-.5,0),
              line:{color:"#374151",dash:"dash",width:2}}],
   },CFG);
 
-  // Funil por dispositivo (grouped bar)
-  const etapas = ["sessoes","add_to_cart","checkout","pedidos"];
-  const labels  = ["Sessões","Add to Cart","Checkout","Pedidos"];
-  Plotly.newPlot("ch-funil-disp",
-    funil.map((r,i)=>({
-      type:"bar",name:r.dispositivo,
-      x:labels, y:etapas.map(e=>r[e]),
-      marker:{color:C[i]},
+  // Funil por dispositivo (filtrado — destaca selecionado)
+  const etapas=["sessoes","add_to_cart","checkout","pedidos"];
+  const labels=["Sessões","Add to Cart","Checkout","Pedidos"];
+  Plotly.react("ch-funil-disp",
+    D.funil.map((r,i)=>({
+      type:"bar",name:r.dispositivo,x:labels,y:etapas.map(e=>r[e]),
+      marker:{color:C[i],opacity:(disp==="all"||r.dispositivo===disp)?1:.25},
     })),
     {...LAYOUT,barmode:"group",yaxis:{title:"Volume"}},CFG
   );
 
-  // Motivos atendimento
-  Plotly.newPlot("ch-atend",[{
+  // Motivos (sempre completo)
+  Plotly.react("ch-atend",[{
     type:"bar",orientation:"h",
-    x:atend.map(r=>r.quantidade), y:atend.map(r=>r.motivo),
-    marker:{color:C[3]},
-    text:atend.map(r=>r.percentual.toFixed(1)+"%"),
-    textposition:"outside",name:"Tickets",
+    x:atend.map(r=>r.quantidade),y:atend.map(r=>r.motivo),
+    marker:{color:C[3]},text:atend.map(r=>r.percentual.toFixed(1)+"%"),
+    textposition:"outside",
   }],{...LAYOUT,xaxis:{title:"Tickets"}},CFG);
 
-  // Tabela atendimento
-  const cols = ["Motivo","Qtd. Tickets","% do Total","Resolução Média"];
-  const rows = atend.map(r=>[
-    r.motivo, num(r.quantidade),
-    r.percentual.toFixed(1)+"%",
-    r.resolucao_media_dias.toFixed(1)+" dias",
-  ]);
-  document.getElementById("tbl-atend").innerHTML = tableHTML(cols,rows);
+  const cols=["Motivo","Qtd. Tickets","% do Total","Resolução Média"];
+  const rows=atend.map(r=>[r.motivo,num(r.quantidade),
+    r.percentual.toFixed(1)+"%",r.resolucao_media_dias.toFixed(1)+" dias"]);
+  document.getElementById("tbl-atend").innerHTML=tableHTML(cols,rows);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MAIN — inicialização
+// MAIN
 // ═══════════════════════════════════════════════════════════════════════════
-async function initApp(url, key){
+async function initApp(url,key){
   document.getElementById("loading").style.display="flex";
-  try {
-    sb = supabase.createClient(url, key);
-
+  try{
+    sb=supabase.createClient(url,key);
     const [kpis,mensal,cac_canal,campanhas,categorias,funil,
-           cli_canal,cli_uf,renda,atendimento,conv_canal] = await Promise.all([
-      query("kpis_resumo"), query("receita_mensal"), query("cac_por_canal"),
-      query("roi_por_campanha"), query("receita_por_categoria"), query("funil_dispositivo"),
-      query("clientes_por_canal"), query("clientes_por_uf"), query("renda_faixa"),
-      query("motivos_atendimento"), query("conversao_por_canal"),
+           cli_canal,cli_uf,renda,atendimento,conv_canal]=await Promise.all([
+      query("kpis_resumo"),query("receita_mensal"),query("cac_por_canal"),
+      query("roi_por_campanha"),query("receita_por_categoria"),query("funil_dispositivo"),
+      query("clientes_por_canal"),query("clientes_por_uf"),query("renda_faixa"),
+      query("motivos_atendimento"),query("conversao_por_canal"),
     ]);
-
-    const D = {kpis,mensal,cac_canal,campanhas,categorias,funil,
-               cli_canal,cli_uf,renda,atendimento,conv_canal};
-
-    renderExecutivo(D);
-    renderMarketing(D);
-    renderProdutos(D);
-    renderClientes(D);
-    renderDiagnostico(D);
-
-  } catch(e){
-    alert("Erro ao carregar dados: " + e.message +
+    globalD={kpis,mensal,cac_canal,campanhas,categorias,funil,
+             cli_canal,cli_uf,renda,atendimento,conv_canal};
+    populateFilters(globalD);
+    renderExecutivo(globalD);
+    renderMarketing(globalD);
+    renderProdutos(globalD);
+    renderClientes(globalD);
+    renderDiagnostico(globalD);
+  }catch(e){
+    alert("Erro ao carregar dados: "+e.message+
           "\n\nVerifique as credenciais e se o SQL de setup foi executado no Supabase.");
-  } finally {
+  }finally{
     document.getElementById("loading").style.display="none";
   }
 }
 
-// ── Ponto de entrada ──────────────────────────────────────────────────────
-window.addEventListener("DOMContentLoaded", ()=>{
-  const url = HARD_URL || sessionStorage.getItem("sb_url");
-  const key = HARD_KEY || sessionStorage.getItem("sb_key");
-
-  if(url && key){
-    initApp(url, key);
-  } else {
-    document.getElementById("loading").style.display="none";
-    document.getElementById("cfg-modal").style.display="flex";
-  }
+window.addEventListener("DOMContentLoaded",()=>{
+  const url=HARD_URL||sessionStorage.getItem("sb_url");
+  const key=HARD_KEY||sessionStorage.getItem("sb_key");
+  if(url&&key){initApp(url,key)}
+  else{document.getElementById("loading").style.display="none";
+       document.getElementById("cfg-modal").style.display="flex"}
 });
 </script>
 </body>
