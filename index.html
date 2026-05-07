@@ -153,24 +153,6 @@ tbody tr:last-child td{border-bottom:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 #loading p{font-size:14px;color:#9ca3af}
 
-/* ── Config modal ── */
-#cfg-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);
-           display:flex;align-items:center;justify-content:center;z-index:1000}
-.cfg-box{background:#fff;border-radius:14px;padding:32px 36px;
-         max-width:460px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.18)}
-.cfg-box h2{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px}
-.cfg-box p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
-.cfg-box label{font-size:11px;font-weight:600;color:var(--text-light);
-               text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
-.cfg-box input{width:100%;padding:10px 13px;border:1.5px solid var(--border);
-               border-radius:7px;font-size:13px;margin-bottom:14px;outline:none;
-               color:var(--text);transition:border-color .15s}
-.cfg-box input:focus{border-color:var(--accent)}
-.cfg-btn{width:100%;padding:11px;background:var(--accent);color:#fff;
-         font-size:14px;font-weight:600;border:none;border-radius:8px;
-         cursor:pointer;transition:opacity .15s}
-.cfg-btn:hover{opacity:.88}
-.cfg-err{color:var(--err);font-size:12px;margin-top:8px;display:none}
 
 /* ── Footer ── */
 #footer{text-align:center;font-size:11.5px;color:#9ca3af;
@@ -202,19 +184,6 @@ tbody tr:last-child td{border-bottom:none}
   <p>Carregando dados...</p>
 </div>
 
-<div id="cfg-modal" style="display:none">
-  <div class="cfg-box">
-    <h2>Configurar Supabase</h2>
-    <p>Informe as credenciais do seu projeto Supabase.<br>
-       A chave <strong>anon/public</strong> &eacute; segura para uso aqui &mdash; RLS est&aacute; ativo.</p>
-    <label>Project URL</label>
-    <input id="cfg-url" type="text" placeholder="https://xxxxxxxxxxxx.supabase.co"/>
-    <label>Anon Key</label>
-    <input id="cfg-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."/>
-    <button class="cfg-btn" onclick="saveConfig()">Conectar</button>
-    <p class="cfg-err" id="cfg-err">N&atilde;o foi poss&iacute;vel conectar. Verifique as credenciais.</p>
-  </div>
-</div>
 
 <nav id="sidebar">
   <div class="sb-brand">
@@ -443,15 +412,6 @@ function tableHTML(cols,rows){
 let sb, globalD;
 async function query(t){const{data,error}=await sb.from(t).select("*");if(error)throw error;return data}
 
-// Config
-function saveConfig(){
-  const url=document.getElementById("cfg-url").value.trim();
-  const key=document.getElementById("cfg-key").value.trim();
-  if(!url||!key){document.getElementById("cfg-err").style.display="block";return}
-  sessionStorage.setItem("sb_url",url);sessionStorage.setItem("sb_key",key);
-  document.getElementById("cfg-modal").style.display="none";
-  initApp(url,key);
-}
 
 // Nav
 document.querySelectorAll(".sb-nav a").forEach(a=>{
@@ -867,11 +827,7 @@ window.addEventListener("resize",()=>{
 });
 
 window.addEventListener("DOMContentLoaded",()=>{
-  const url=HARD_URL||sessionStorage.getItem("sb_url");
-  const key=HARD_KEY||sessionStorage.getItem("sb_key");
-  if(url&&key){initApp(url,key)}
-  else{document.getElementById("loading").style.display="none";
-       document.getElementById("cfg-modal").style.display="flex"}
+  initApp(HARD_URL, HARD_KEY);
 });
 </script>
 </body>
